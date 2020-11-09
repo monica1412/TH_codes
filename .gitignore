@@ -1,0 +1,11 @@
+.Rproj.user
+*conf.R
+*.csv
+*.rda
+*.RData
+*.txt
+*.rda
+*.png
+*.RDS
+*.pdf
+*.DS_Store 
