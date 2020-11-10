@@ -80,10 +80,10 @@ recipes_create <- add_life_time_to_table(recipes_create)
 # )
 
 # ACTUAL CREATION OF FINAL TABLE indicating the nr. of recipes to include
-registerDoMC(4)
-final_table <- foreach(r = 1:nrow(recipes_create))  %dopar% { # to print the whole table write "r in 1:nrow(recipes_create)"
+registerDoMC(4) # How many cores to use
+final_table <- foreach(r = 1:nrow(recipes_create[1:4]))  %dopar% { # to print the whole table write "r in 1:nrow(recipes_create)"
     # Print status
-    if(r %% 10 ==0)
+    if(r %% 100 == 0)
         print (r/nrow(recipes_create))
 
     new_table <- create_table_for_recipe(
@@ -92,3 +92,5 @@ final_table <- foreach(r = 1:nrow(recipes_create))  %dopar% { # to print the who
     new_table
 }
 final_table <- rbindlist(final_table)
+
+dbWriteTable(db, "radu_aggregated_diffusion",  final_table, row.names=FALSE)

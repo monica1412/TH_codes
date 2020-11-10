@@ -31,12 +31,11 @@ recipe_comments <- data.table(dbReadTable(db, "recipe_comments"))
 recipe_ingredients_mapping <- data.table(dbReadTable(db, "recipe_ingredients_mapping"))
 ingredients_emissions <- data.table(dbReadTable(db, "ingredients_emissions"))
 
-
 ### MONICA'S TABLE CREATION ###
 
 # --> emission calculation
-ingredients_emissions <- rename(ingredients_emissions, raw = name)
-recipe_ingredients_mapping <- left_join(recipe_ingredients_mapping, ingredients_emissions, by="raw")
+# ingredients_emissions <- rename(ingredients_emissions, clean = name)
+recipe_ingredients_mapping <- merge(recipe_ingredients_mapping, ingredients_emissions, by.x="clean", by.y="name", all.x=TRUE)
 recipe_ingredients_mapping$co2emissions <- as.numeric(recipe_ingredients_mapping$quantity*recipe_ingredients_mapping$emissions)
 
 h_2 <- names (recipe_ingredients_mapping)[7]  # co2emissions
@@ -133,18 +132,18 @@ dev.off()
 ## 2) Scatterplots and Boxplots
 # Scatterplots
 pdf("plot_age.pdf")
-ggplot(table_first_part, aes(x = age_of_creator,
+ggplot(table_first_part[age_of_creator>0 & age_of_creator < 100], aes(x = age_of_creator,
                       y = co2emissions)) + geom_point(size=2, shape=23, color="palegreen4", alpha = 0.3)
 dev.off()
 
 pdf("plot_adopters.pdf")
 ggplot(table_first_part, aes(x = nr_adopters,
-                             y = co2emissions)) + geom_point(size=2, shape=23, color="sienna2", alpha = 0.3)
+                             y = co2emissions)) + geom_point(size=2, shape=23, color="sienna2", alpha = 0.3) + scale_y_continuous(trans = 'log2') + scale_x_continuous(trans = 'log2')
 dev.off()
 
 pdf("plot_rate.pdf")
 ggplot(table_first_part, aes(x = mean_rating,
-                             y = co2emissions)) + geom_point(size=2, shape=23, color="pink", alpha = 0.3)
+                             y = co2emissions)) + geom_point(size=2, shape=23, color="pink", alpha = 0.3) + scale_y_continuous(trans = 'log2')
 dev.off()
 
 pdf("plot_comments.pdf")
@@ -262,13 +261,3 @@ ggplot(dynamics, aes(x = year, y = Freq)) +
   ylim(1000, 1400) +
   theme_light()
 dev.off()
-
-
-
-
-
-
-
-
-
-

@@ -2,7 +2,7 @@
 #'
 #' This function does this and that
 #'
-#' @param table_for_calendar_week xxx
+#' @param table_for_calendar_week data.table with ..
 #'
 #' @export
 #' @author Monica Butnariuc
