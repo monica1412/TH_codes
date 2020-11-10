@@ -19,8 +19,10 @@ library(purrr)        # enhanced features to deal with vectors and functions
 library(vtable)       # nice package for producing tables
 library(data.table)
 
+# Define connection parameters
+source("conf.R")
+
 # upload tables of interest
-source("/Users/monicamirelabutnariuc/Downloads/UZH/FS_20/Master TS/R/first_part/conf.R")
 recipes_create <- data.table(dbReadTable(db, "recipes_create"))
 recipes_rate <- data.table(dbReadTable(db, "recipes_rate"))
 recipes <- data.table(dbReadTable(db, "recipes"))
@@ -29,12 +31,11 @@ recipe_comments <- data.table(dbReadTable(db, "recipe_comments"))
 recipe_ingredients_mapping <- data.table(dbReadTable(db, "recipe_ingredients_mapping"))
 ingredients_emissions <- data.table(dbReadTable(db, "ingredients_emissions"))
 
-
 ### MONICA'S TABLE CREATION ###
 
 # --> emission calculation
-ingredients_emissions <- rename(ingredients_emissions, raw = name)
-recipe_ingredients_mapping <- left_join(recipe_ingredients_mapping, ingredients_emissions, by="raw")
+# ingredients_emissions <- rename(ingredients_emissions, clean = name)
+recipe_ingredients_mapping <- merge(recipe_ingredients_mapping, ingredients_emissions, by.x="clean", by.y="name", all.x=TRUE)
 recipe_ingredients_mapping$co2emissions <- as.numeric(recipe_ingredients_mapping$quantity*recipe_ingredients_mapping$emissions)
 
 h_2 <- names (recipe_ingredients_mapping)[7]  # co2emissions
@@ -52,23 +53,23 @@ recipes_create <- recipes_create[, age_in_weeks :=ceiling(difftime(max(recipes_r
 
 
 # --> nr comments calculation
-recipe_comments <- recipe_comments[, nr_comments := as.numeric(.N), by = recipe_id] # count elements 
+recipe_comments <- recipe_comments[, nr_comments := as.numeric(.N), by = recipe_id] # count elements
 recipe_comments <- recipe_comments[!duplicated(recipe_id),]
 
 
 # --> nr adopters calculation
-recipes_rate <- recipes_rate[, nr_adopters := as.numeric(.N), by = recipe_id] # count elements 
+recipes_rate <- recipes_rate[, nr_adopters := as.numeric(.N), by = recipe_id] # count elements
 recipes_rate <- recipes_rate[!duplicated(recipe_id),]
 
 
-# --> creator characteristics 
+# --> creator characteristics
 age_of_creator_when_creating <- users[, age_of_creator := year(users$created_at) - year(users$birthday) ]
 recipes_create <- merge(x=recipes_create, y=users[, c("user_id", "cooking_skills")], by="user_id", all.x = TRUE)
 recipes_create <- merge(x=recipes_create, y=users[, c("user_id", "age_of_creator")], by="user_id", all.x = TRUE)
 recipes_create <- merge(x=recipes_create, y=users[, c("user_id", "country")], by="user_id", all.x = TRUE)
 
 ### table first part creation ###
-table_first_part <- data.table(recipe_id=recipes$recipe_id,  
+table_first_part <- data.table(recipe_id=recipes$recipe_id,
                            type=recipes$type)
 
 table_first_part <- merge(x=table_first_part, y=recipes_create[, c("recipe_id", "cooking_skills")], by="recipe_id", all.x = TRUE)
@@ -88,7 +89,7 @@ table_first_part <- merge(x=table_first_part, y=recipes_create[, c("recipe_id", 
 ## 1) Table of summary statistics
 
 sumary_statistics <- table_first_part %>%
-  subset(select=c("co2emissions", "age_in_weeks", "nr_adopters", "mean_rating", 
+  subset(select=c("co2emissions", "age_in_weeks", "nr_adopters", "mean_rating",
                   "nr_comments", "age_of_creator"))
 stargazer(as.data.frame(sumary_statistics), type = "text")
 
@@ -96,92 +97,92 @@ stargazer(as.data.frame(sumary_statistics), type = "text")
 table_first_part$cooking_level <- sample(1:nrow(table_first_part))
 
 table_first_part <- table_first_part %>%
-  mutate(cooking_level = ifelse(cooking_skills == "beginner", 1, cooking_level)) %>% 
-  mutate(cooking_level = ifelse(cooking_skills == "amateurchef", 2, cooking_level)) %>% 
-  mutate(cooking_level = ifelse(cooking_skills == "advanced", 3, cooking_level)) %>% 
-  mutate(cooking_level = ifelse(cooking_skills == "chefcook", 4, cooking_level)) 
+  mutate(cooking_level = ifelse(cooking_skills == "beginner", 1, cooking_level)) %>%
+  mutate(cooking_level = ifelse(cooking_skills == "amateurchef", 2, cooking_level)) %>%
+  mutate(cooking_level = ifelse(cooking_skills == "advanced", 3, cooking_level)) %>%
+  mutate(cooking_level = ifelse(cooking_skills == "chefcook", 4, cooking_level))
 
-table_first_part_2 <- table_first_part[complete.cases(table_first_part[ , "cooking_skills"]),] 
+table_first_part_2 <- table_first_part[complete.cases(table_first_part[ , "cooking_skills"]),]
 
-pdf("plotcook.pdf") 
+pdf("plotcook.pdf")
 ggplot(table_first_part_2)+
   geom_histogram(aes(x=cooking_level, fill=cooking_skills), bins = 8) + labs(title="Distribution of cooking skills",
                                                                              x="Level of cooking skills", y = "Count") + theme_bw()
-dev.off() 
+dev.off()
 
 
 # type
 table_first_part$overall_type <- sample(1:nrow(table_first_part))
 
 table_first_part <- table_first_part %>%
-  mutate(overall_type = ifelse(type == "vegan", 1, overall_type)) %>% 
-  mutate(overall_type = ifelse(type == "vegetarian", 2, overall_type)) %>% 
-  mutate(overall_type = ifelse(type == "fish", 3, overall_type)) %>% 
-  mutate(overall_type = ifelse(type == "meat", 4, overall_type)) 
+  mutate(overall_type = ifelse(type == "vegan", 1, overall_type)) %>%
+  mutate(overall_type = ifelse(type == "vegetarian", 2, overall_type)) %>%
+  mutate(overall_type = ifelse(type == "fish", 3, overall_type)) %>%
+  mutate(overall_type = ifelse(type == "meat", 4, overall_type))
 
-table_first_part_3 <- table_first_part[complete.cases(table_first_part[ , "type"]),] 
+table_first_part_3 <- table_first_part[complete.cases(table_first_part[ , "type"]),]
 
-pdf("plottype.pdf") 
+pdf("plottype.pdf")
 ggplot(table_first_part_3)+
   geom_histogram(aes(x=overall_type, fill=type), bins = 8) + labs(title="Distribution of recipe types",
                                                                   x="Recipe types", y = "Count") + theme_bw()
-dev.off() 
+dev.off()
 
 
 ## 2) Scatterplots and Boxplots
 # Scatterplots
-pdf("plot_age.pdf") 
-ggplot(table_first_part, aes(x = age_of_creator, 
+pdf("plot_age.pdf")
+ggplot(table_first_part[age_of_creator>0 & age_of_creator < 100], aes(x = age_of_creator,
                       y = co2emissions)) + geom_point(size=2, shape=23, color="palegreen4", alpha = 0.3)
-dev.off() 
+dev.off()
 
-pdf("plot_adopters.pdf") 
-ggplot(table_first_part, aes(x = nr_adopters, 
-                             y = co2emissions)) + geom_point(size=2, shape=23, color="sienna2", alpha = 0.3)
-dev.off() 
+pdf("plot_adopters.pdf")
+ggplot(table_first_part, aes(x = nr_adopters,
+                             y = co2emissions)) + geom_point(size=2, shape=23, color="sienna2", alpha = 0.3) + scale_y_continuous(trans = 'log2') + scale_x_continuous(trans = 'log2')
+dev.off()
 
-pdf("plot_rate.pdf") 
-ggplot(table_first_part, aes(x = mean_rating, 
-                             y = co2emissions)) + geom_point(size=2, shape=23, color="pink", alpha = 0.3)
-dev.off() 
+pdf("plot_rate.pdf")
+ggplot(table_first_part, aes(x = mean_rating,
+                             y = co2emissions)) + geom_point(size=2, shape=23, color="pink", alpha = 0.3) + scale_y_continuous(trans = 'log2')
+dev.off()
 
-pdf("plot_comments.pdf") 
-ggplot(table_first_part, aes(x = nr_comments, 
+pdf("plot_comments.pdf")
+ggplot(table_first_part, aes(x = nr_comments,
                              y = co2emissions)) + geom_point(size=2, shape=23, color="thistle3", alpha = 0.3)
-dev.off() 
+dev.off()
 
-pdf("plot_life.pdf") 
-ggplot(table_first_part, aes(x = age_in_weeks, 
+pdf("plot_life.pdf")
+ggplot(table_first_part, aes(x = age_in_weeks,
                              y = co2emissions)) + geom_point(size=2, shape=23, color="royalblue1", alpha = 0.3)
-dev.off() 
+dev.off()
 
 
 # Boxplots
-pdf("plot_boxcookingskills.pdf") 
-p = ggplot(table_first_part[table_first_part$cooking_skills=="beginner" 
+pdf("plot_boxcookingskills.pdf")
+p = ggplot(table_first_part[table_first_part$cooking_skills=="beginner"
                             | table_first_part$cooking_skills=="amateurchef"
                             | table_first_part$cooking_skills=="advanced"
-                            | table_first_part$cooking_skills=="chefcook",], 
+                            | table_first_part$cooking_skills=="chefcook",],
            aes(x=cooking_level, y=co2emissions, fill=cooking_skills))
 p + geom_boxplot()
-dev.off() 
+dev.off()
 
 
-pdf("plot_boxtype.pdf") 
-pp = ggplot(table_first_part[table_first_part$type=="vegan" 
+pdf("plot_boxtype.pdf")
+pp = ggplot(table_first_part[table_first_part$type=="vegan"
                             | table_first_part$type=="vegetarian"
                             | table_first_part$type=="fish"
-                            | table_first_part$type=="meat",], 
+                            | table_first_part$type=="meat",],
            aes(x=overall_type, y=co2emissions, fill=type))
 pp + geom_boxplot()
-dev.off() 
+dev.off()
 
 
 ## 3) Linear regressions
 ## What is the most used ingredient and the respective emission?
 ## Which ingredients have the lowest/ highest emissions?
-my_ingredient_emission <- data.table(ingredient=recipe_ingredients_mapping$raw, emissions=recipe_ingredients_mapping$emissions, type=recipe_ingredients_mapping$type) 
-my_ingredient_emission <- unique(my_ingredient_emission)  
+my_ingredient_emission <- data.table(ingredient=recipe_ingredients_mapping$raw, emissions=recipe_ingredients_mapping$emissions, type=recipe_ingredients_mapping$type)
+my_ingredient_emission <- unique(my_ingredient_emission)
 my_ingredient_emission <- my_ingredient_emission[complete.cases(my_ingredient_emission[ , "emissions"]),] # emissions or 2
 freq_ingredients <- as.data.frame(table(recipe_ingredients_mapping$raw))
 freq_ingredients <- rename(freq_ingredients, ingredient = Var1)
@@ -193,30 +194,30 @@ my_ingredient_emission$rank <- rank(my_ingredient_emission$emissions)
 
 write.csv(my_ingredient_emission, "my_ingredient_emission.csv")
 
-## How does emissions influence nr. of adopters? 
-sub_2 <- data.table(emissions=table_first_part$co2emissions, nr_adopters=table_first_part$nr_adopters) 
+## How does emissions influence nr. of adopters?
+sub_2 <- data.table(emissions=table_first_part$co2emissions, nr_adopters=table_first_part$nr_adopters)
 sub_2 <- sub_2[complete.cases(sub_2[ , "emissions"]),] # emissions or 2
-lm_sub_2 <- lm(nr_adopters ~ emissions, data = sub_2) 
+lm_sub_2 <- lm(nr_adopters ~ emissions, data = sub_2)
 
 ## How does emissions influence nr. of comments?
-sub_3 <- data.table(emissions=table_first_part$co2emissions, nr_comments=table_first_part$nr_comments) 
+sub_3 <- data.table(emissions=table_first_part$co2emissions, nr_comments=table_first_part$nr_comments)
 sub_3 <- sub_3[complete.cases(sub_3[ , "emissions"]),] # emissions or 2
-lm_sub_3 <- lm(nr_comments ~ emissions, data = sub_3) 
+lm_sub_3 <- lm(nr_comments ~ emissions, data = sub_3)
 
 ## How does emissions influence mean_rating?
-sub_4 <- data.table(emissions=table_first_part$co2emissions, mean_rating=table_first_part$mean_rating) 
+sub_4 <- data.table(emissions=table_first_part$co2emissions, mean_rating=table_first_part$mean_rating)
 sub_4 <- sub_4[complete.cases(sub_4[ , "emissions"]),] # emissions or 2
-lm_sub_4 <- lm(mean_rating ~ emissions, data = sub_4) 
+lm_sub_4 <- lm(mean_rating ~ emissions, data = sub_4)
 stargazer(lm_sub_2, lm_sub_3, lm_sub_4, type = "text")
 
-## Does age of the creator, type (vegan - meat), and cooking skills (beginner - chefcook) influence emissions? 
+## Does age of the creator, type (vegan - meat), and cooking skills (beginner - chefcook) influence emissions?
 sub_one <- data.table(recipe_id = table_first_part$recipe_id,
                       age_of_creator = table_first_part$age_of_creator,
                       type = table_first_part$type,
                       coooking_skills = table_first_part$cooking_skills,
                       country = table_first_part$country,
                       emissions = table_first_part$co2emissions)
-sub_one <- sub_one[complete.cases(sub_one),] 
+sub_one <- sub_one[complete.cases(sub_one),]
 
 lm_tot <- lm(emissions ~ age_of_creator + type + coooking_skills + country, data = sub_one)
 
@@ -227,8 +228,8 @@ stargazer(lm_tot, type = "text")
 
 ##### DYNAMICS OVER TIME #####
 
-## Are recipes becoming more/ less sustainable in time? 
-table_dynamics <- data.table(type=table_first_part$type, age_in_weeks=table_first_part$age_in_weeks) 
+## Are recipes becoming more/ less sustainable in time?
+table_dynamics <- data.table(type=table_first_part$type, age_in_weeks=table_first_part$age_in_weeks)
 table_dynamics <- table_dynamics[complete.cases(table_dynamics[ , "type"]),]
 
 ago_0_10 <- subset(table_dynamics, age_in_weeks > 0 & age_in_weeks < 522)  # 1-521
@@ -254,19 +255,9 @@ freq_ago_40_50 <- cbind(freq_ago_40_50, year = 1980)
 dynamics <- rbind(freq_ago_0_10, freq_ago_10_20, freq_ago_20_30, freq_ago_30_40, freq_ago_40_50)
 dynamics <- rename(dynamics, Types = Var1)
 
-pdf("plot_dymanics.pdf") 
-ggplot(dynamics, aes(x = year, y = Freq)) + 
+pdf("plot_dymanics.pdf")
+ggplot(dynamics, aes(x = year, y = Freq)) +
   geom_line(aes(color = Types), size = 1) +
   ylim(1000, 1400) +
   theme_light()
-dev.off() 
-
-
-
-
-
-
-
-
-
-
+dev.off()
