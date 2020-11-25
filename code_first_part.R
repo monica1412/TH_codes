@@ -68,10 +68,35 @@ recipes_create <- merge(x=recipes_create, y=users[, c("user_id", "cooking_skills
 recipes_create <- merge(x=recipes_create, y=users[, c("user_id", "age_of_creator")], by="user_id", all.x = TRUE)
 recipes_create <- merge(x=recipes_create, y=users[, c("user_id", "country")], by="user_id", all.x = TRUE)
 
-### table first part creation ###
-table_first_part <- data.table(recipe_id=recipes$recipe_id,
-                           type=recipes$type)
 
+# --> type extraction
+table_type <- recipe_ingredients_mapping %>% subset(type == "vegan" | type == "vegetarian" | 
+                                                      type == "fish" | type == "meat")
+
+table_type$raw_type <- sample(1:nrow(table_type))
+
+table_type <- table_type %>%
+  mutate(raw_type = ifelse(type == "meat", 4, raw_type)) %>%
+  mutate(raw_type = ifelse(type == "fish", 3, raw_type)) %>%
+  mutate(raw_type = ifelse(type == "vegetarian", 2, raw_type)) %>%
+  mutate(raw_type = ifelse(type == "vegan", 1, raw_type))
+
+h_type <- names(table_type)[8] # raw_type
+
+recipe_type <- unique(table_type[, lapply(.SD, max, na.rm=TRUE), by=recipe_id, .SDcols=h_type])
+
+recipe_type$type <- sample(1:nrow(recipe_type))
+recipe_type <- recipe_type %>%
+  mutate(type = ifelse(raw_type ==  4,"meat", type)) %>%
+  mutate(type = ifelse(raw_type ==  3 , "fish",  type)) %>%
+  mutate(type = ifelse(raw_type == 2, "vegetarian", type)) %>%
+  mutate(type = ifelse(raw_type ==  1,"vegan", type))
+
+
+### table first part creation ###
+table_first_part <- data.table(recipe_id=recipes$recipe_id)
+
+table_first_part <- merge(x=table_first_part, y=recipe_type[, c("recipe_id", "type")], by="recipe_id", all.x = TRUE)
 table_first_part <- merge(x=table_first_part, y=recipes_create[, c("recipe_id", "cooking_skills")], by="recipe_id", all.x = TRUE)
 table_first_part <- merge(x=table_first_part, y=recipes_create[, c("recipe_id", "age_of_creator")], by="recipe_id", all.x = TRUE)
 table_first_part <- merge(x=table_first_part, y=total_co2_emission[, c("recipe_id", "co2emissions")], by="recipe_id", all.x = TRUE)
