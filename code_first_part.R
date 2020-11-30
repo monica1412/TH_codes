@@ -49,7 +49,7 @@ mean_rating <- rename(mean_rating, mean_rating = rating)
 
 
 # --> recipe age in weeks calculation
-recipes_create <- recipes_create[, age_in_weeks :=ceiling(difftime(max(recipes_rate$timestamp), recipes_create$timestamp, units = "weeks"))]
+recipes_create <- recipes_create[, age_in_weeks :=ceiling(difftime(as.Date("31-12-2019", "%d-%m-%Y"), recipes_create$timestamp, units = "weeks"))]
 
 
 # --> nr comments calculation
@@ -257,32 +257,37 @@ stargazer(lm_tot, type = "text")
 table_dynamics <- data.table(type=table_first_part$type, age_in_weeks=table_first_part$age_in_weeks)
 table_dynamics <- table_dynamics[complete.cases(table_dynamics[ , "type"]),]
 
-ago_0_10 <- subset(table_dynamics, age_in_weeks > 0 & age_in_weeks < 522)  # 1-521
-freq_ago_0_10 <- as.data.frame(table(ago_0_10$type))
-freq_ago_0_10 <- cbind(freq_ago_0_10, year = 2020)
+y_2019 <- subset(table_dynamics, age_in_weeks > 0 & age_in_weeks < 53)  # 1-52
+freq_y_2019 <- as.data.frame(table(y_2019$type))
+freq_y_2019 <- cbind(freq_y_2019, year = 2019)
 
-ago_10_20 <- subset(table_dynamics, age_in_weeks > 521 & age_in_weeks < 1043) # 522-1042
-freq_ago_10_20 <- as.data.frame(table(ago_10_20$type))
-freq_ago_10_20 <- cbind(freq_ago_10_20, year = 2010)
+y_2017_2018 <- subset(table_dynamics, age_in_weeks > 52 & age_in_weeks < 157) # 53-156
+freq_y_2017_2018 <- as.data.frame(table(y_2017_2018$type))
+freq_y_2017_2018 <- cbind(freq_y_2017_2018, year = 2018)
 
-ago_20_30 <- subset(table_dynamics, age_in_weeks > 1042 & age_in_weeks < 1564) # 1043-1563
-freq_ago_20_30 <- as.data.frame(table(ago_20_30$type))
-freq_ago_20_30 <- cbind(freq_ago_20_30, year = 2000)
+y_2015_2016 <- subset(table_dynamics, age_in_weeks > 156 & age_in_weeks < 261) # 157-260
+freq_y_2015_2016 <- as.data.frame(table(y_2015_2016$type))
+freq_y_2015_2016 <- cbind(freq_y_2015_2016, year = 2016)
 
-ago_30_40 <- subset(table_dynamics, age_in_weeks > 1563 & age_in_weeks < 2085) # 1564-2084
-freq_ago_30_40 <- as.data.frame(table(ago_30_40$type))
-freq_ago_30_40 <- cbind(freq_ago_30_40, year = 1990)
+y_2013_2014 <- subset(table_dynamics, age_in_weeks > 260 & age_in_weeks < 365) # 261-364
+freq_y_2013_2014 <- as.data.frame(table(y_2013_2014$type))
+freq_y_2013_2014 <- cbind(freq_y_2013_2014, year = 2014)
 
-ago_40_50 <- subset(table_dynamics, age_in_weeks > 2084 & age_in_weeks < 2607) # 2085-2606
-freq_ago_40_50 <- as.data.frame(table(ago_40_50$type))
-freq_ago_40_50 <- cbind(freq_ago_40_50, year = 1980)
+y_2011_2012 <- subset(table_dynamics, age_in_weeks > 364 & age_in_weeks < 469) # 365-468
+freq_y_2011_2012 <- as.data.frame(table(y_2011_2012$type))
+freq_y_2011_2012 <- cbind(freq_y_2011_2012, year = 2012)
 
-dynamics <- rbind(freq_ago_0_10, freq_ago_10_20, freq_ago_20_30, freq_ago_30_40, freq_ago_40_50)
+y_2009_2010 <- subset(table_dynamics, age_in_weeks > 468 & age_in_weeks < 580) # 469-580
+freq_y_2009_2010 <- as.data.frame(table(y_2009_2010$type))
+freq_y_2009_2010 <- cbind(freq_y_2009_2010, year = 2010)
+
+dynamics <- rbind(freq_y_2019, freq_y_2017_2018, freq_y_2015_2016, freq_y_2013_2014, freq_y_2011_2012, freq_y_2009_2010)
 dynamics <- rename(dynamics, Types = Var1)
 
 pdf("plot_dymanics.pdf")
 ggplot(dynamics, aes(x = year, y = Freq)) +
   geom_line(aes(color = Types), size = 1) +
-  ylim(1000, 1400) +
+  # ylim(1000, 1400) +
+  xlim(2009, 2021) +
   theme_light()
 dev.off()
