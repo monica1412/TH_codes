@@ -254,40 +254,16 @@ stargazer(lm_tot, type = "text")
 ##### DYNAMICS OVER TIME #####
 
 ## Are recipes becoming more/ less sustainable in time?
-table_dynamics <- data.table(type=table_first_part$type, age_in_weeks=table_first_part$age_in_weeks)
+table_dynamics <- data.table(type = table_first_part$type, year_publication = year(recipes_create$timestamp)) 
 table_dynamics <- table_dynamics[complete.cases(table_dynamics[ , "type"]),]
-
-y_2019 <- subset(table_dynamics, age_in_weeks > 0 & age_in_weeks < 53)  # 1-52
-freq_y_2019 <- as.data.frame(table(y_2019$type))
-freq_y_2019 <- cbind(freq_y_2019, year = 2019)
-
-y_2017_2018 <- subset(table_dynamics, age_in_weeks > 52 & age_in_weeks < 157) # 53-156
-freq_y_2017_2018 <- as.data.frame(table(y_2017_2018$type))
-freq_y_2017_2018 <- cbind(freq_y_2017_2018, year = 2018)
-
-y_2015_2016 <- subset(table_dynamics, age_in_weeks > 156 & age_in_weeks < 261) # 157-260
-freq_y_2015_2016 <- as.data.frame(table(y_2015_2016$type))
-freq_y_2015_2016 <- cbind(freq_y_2015_2016, year = 2016)
-
-y_2013_2014 <- subset(table_dynamics, age_in_weeks > 260 & age_in_weeks < 365) # 261-364
-freq_y_2013_2014 <- as.data.frame(table(y_2013_2014$type))
-freq_y_2013_2014 <- cbind(freq_y_2013_2014, year = 2014)
-
-y_2011_2012 <- subset(table_dynamics, age_in_weeks > 364 & age_in_weeks < 469) # 365-468
-freq_y_2011_2012 <- as.data.frame(table(y_2011_2012$type))
-freq_y_2011_2012 <- cbind(freq_y_2011_2012, year = 2012)
-
-y_2009_2010 <- subset(table_dynamics, age_in_weeks > 468 & age_in_weeks < 580) # 469-580
-freq_y_2009_2010 <- as.data.frame(table(y_2009_2010$type))
-freq_y_2009_2010 <- cbind(freq_y_2009_2010, year = 2010)
-
-dynamics <- rbind(freq_y_2019, freq_y_2017_2018, freq_y_2015_2016, freq_y_2013_2014, freq_y_2011_2012, freq_y_2009_2010)
-dynamics <- rename(dynamics, Types = Var1)
+freq_dynamics <- data.frame(table(table_dynamics$year_publication, table_dynamics$type))
+freq_dynamics <- rename(freq_dynamics, Year = Var1, Type = Var2)
+freq_dynamics$Year = as.numeric(levels(freq_dynamics$Year))[freq_dynamics$Year]
 
 pdf("plot_dymanics.pdf")
-ggplot(dynamics, aes(x = year, y = Freq)) +
-  geom_line(aes(color = Types), size = 1) +
+ggplot(freq_dynamics, aes(x = Year, y = Freq)) +
+  geom_line(aes(color = Type), size = 1) +
   # ylim(1000, 1400) +
-  xlim(2009, 2021) +
+  # xlim(2009, 2021) +
   theme_light()
 dev.off()
