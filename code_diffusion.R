@@ -1,23 +1,15 @@
-source("/Users/monicamirelabutnariuc/Downloads/UZH/FS_20/Master TS/R/old_conf.R")
+library(RPostgreSQL)
+library(dplyr)        # many useful functions for quick data manipulation
+library(tidyr)        # designed specifically for data tidying
+library(data.table)
+library(diffusion)
 
-recipes_create <- data.table(dbReadTable(db, "recipes_create"))
-recipes_rate <- data.table(dbReadTable(db, "recipes_rate"))
-recipes <- data.table(dbReadTable(db, "recipes"))
-users <- data.table(dbReadTable(db, "users"))
-recipe_comments <- data.table(dbReadTable(db, "recipe_comments"))
-recipe_ingredients_mapping <- data.table(dbReadTable(db, "recipe_ingredients_mapping"))
-ingredients_emissions <- data.table(dbReadTable(db, "ingredients_emissions"))
+# Define connection parameters
+source("conf.R")
 
-recipes_create <- recipes_create[recipes_create$recipe_id %in% recipes$recipe_id,]
-
-# --> emission calculation
-# ingredients_emissions <- rename(ingredients_emissions, clean = name)
-recipe_ingredients_mapping <- merge(recipe_ingredients_mapping, ingredients_emissions, by.x="clean", by.y="name", all.x=TRUE)
-recipe_ingredients_mapping$co2emissions <- as.numeric(recipe_ingredients_mapping$quantity*recipe_ingredients_mapping$emissions)
-
-h_2 <- names (recipe_ingredients_mapping)[7]  # co2emissions
-total_co2_emission <- unique(recipe_ingredients_mapping[, lapply(.SD, sum, na.rm=TRUE), by=recipe_id, .SDcols=h_2])
-
+# upload tables of interest
+recipes_rate <- data.table(dbReadTable(db, "recipes_rate")) 
+recipe_ingredients_mapping <- data.table(dbReadTable(db, "recipe_ingredients_mapping")) 
 
 # --> type extraction
 table_type <- recipe_ingredients_mapping %>% subset(type == "vegan" | type == "vegetarian" | 
@@ -31,7 +23,7 @@ table_type <- table_type %>%
   mutate(raw_type = ifelse(type == "vegetarian", 2, raw_type)) %>%
   mutate(raw_type = ifelse(type == "vegan", 1, raw_type))
 
-h_type <- names(table_type)[8] # raw_type
+h_type <- names(table_type)[6] # raw_type
 
 recipe_type <- unique(table_type[, lapply(.SD, max, na.rm=TRUE), by=recipe_id, .SDcols=h_type])
 
@@ -52,8 +44,7 @@ recipes_rate <- cbind(nr = 1, recipes_rate)
 diff_final <- data.table(type = recipes_rate$type, year_month_adoption = recipes_rate$timestamp) 
 diff_final <- diff_final[complete.cases(diff_final[ , "type"]),]
 diff_freq <- data.frame(table(diff_final$year_month_adoption, diff_final$type))
-# freq_dynamics <- rename(freq_dynamics, Year = Var1, Type = Var2)
-names(diff_freq)[1] <- "Month_Year"
+names(diff_freq)[1] <- "Year_Month"
 names(diff_freq)[2] <- "Type"
 
 select_vegan <- subset(diff_freq, diff_freq$Type == "vegan")
