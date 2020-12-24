@@ -45,7 +45,7 @@ total_co2_emission <- unique(recipe_ingredients_mapping[, lapply(.SD, sum, na.rm
 # --> mean rating calculation
 h.1 <- names(recipes_rate)[3] # rating
 mean_rating <- unique(recipes_rate[, lapply(.SD, mean, na.rm=TRUE), by=recipe_id, .SDcols=h.1])
-mean_rating <- rename(mean_rating, mean_rating = rating)
+names(mean_rating)[2] <- "mean_rating"
 
 
 # --> recipe age in weeks calculation
@@ -105,6 +105,7 @@ table_first_part <- merge(x=table_first_part, y=mean_rating[, c("recipe_id", "me
 table_first_part <- merge(x=table_first_part, y=recipe_comments[, c("recipe_id", "nr_comments")], by="recipe_id", all.x = TRUE)
 table_first_part <- merge(x=table_first_part, y=recipes_create[, c("recipe_id", "age_in_weeks")], by="recipe_id", all.x = TRUE)
 table_first_part <- merge(x=table_first_part, y=recipes_create[, c("recipe_id", "country")], by="recipe_id", all.x = TRUE)
+table_first_part <- merge(x=table_first_part, y=recipes_create[, c("recipe_id", "timestamp")], by="recipe_id", all.x = TRUE)
 
 
 #####
@@ -254,10 +255,11 @@ stargazer(lm_tot, type = "text")
 ##### DYNAMICS OVER TIME #####
 
 ## Are recipes becoming more/ less sustainable in time?
-table_dynamics <- data.table(type = table_first_part$type, year_publication = year(recipes_create$timestamp)) 
+table_dynamics <- data.table(type = table_first_part$type, year_publication = year(table_first_part$timestamp)) 
 table_dynamics <- table_dynamics[complete.cases(table_dynamics[ , "type"]),]
 freq_dynamics <- data.frame(table(table_dynamics$year_publication, table_dynamics$type))
-freq_dynamics <- rename(freq_dynamics, Year = Var1, Type = Var2)
+names(freq_dynamics)[1] <- "Year"
+names(freq_dynamics)[2] <- "Type"
 freq_dynamics$Year = as.numeric(levels(freq_dynamics$Year))[freq_dynamics$Year]
 
 pdf("plot_dymanics.pdf")
