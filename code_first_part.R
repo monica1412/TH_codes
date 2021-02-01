@@ -33,23 +33,37 @@ ingredients_emissions <- data.table(dbReadTable(db, "ingredients_emissions"))
 
 ### MONICA'S TABLE CREATION ###
 
+# select only the recipes we need
+recipes <- recipes[recipes$category == "Main dishes - meat" | recipes$category == "Main dishes - fish"
+                   | recipes$category == "Main dishes - others" | recipes$category == "Main dishes - vegetarian" 
+                   | recipes$category == "Pasta & rice dishes" | recipes$category == "Starters"]
+
+recipes_create <- recipes_create[recipes_create$recipe_id %in% recipes$recipe_id,]
+recipe_comments <- recipe_comments[recipe_comments$recipe_id %in% recipes$recipe_id,]
+recipe_ingredients_mapping <- recipe_ingredients_mapping[recipe_ingredients_mapping$recipe_id %in% recipes$recipe_id,]
+recipes_rate <- recipes_rate[recipes_rate$recipe_id %in% recipes$recipe_id,]
+
+
 # --> emission calculation
 # ingredients_emissions <- rename(ingredients_emissions, clean = name)
-recipe_ingredients_mapping <- merge(recipe_ingredients_mapping, ingredients_emissions, by.x="clean", by.y="name", all.x=TRUE)
-recipe_ingredients_mapping$co2emissions <- as.numeric(recipe_ingredients_mapping$quantity*recipe_ingredients_mapping$emissions)
+recipe_ingredients_mapping <- merge(recipe_ingredients_mapping, ingredients_emissions, 
+                                    by.x="clean", by.y="name", all.x=TRUE)
+recipe_ingredients_mapping$co2emissions <- as.numeric(
+  recipe_ingredients_mapping$quantity*recipe_ingredients_mapping$emissions)
 
-h_2 <- names (recipe_ingredients_mapping)[7]  # co2emissions
+h_2 <- "co2emissions"
 total_co2_emission <- unique(recipe_ingredients_mapping[, lapply(.SD, sum, na.rm=TRUE), by=recipe_id, .SDcols=h_2])
 
 
 # --> mean rating calculation
-h.1 <- names(recipes_rate)[3] # rating
+h.1 <- "rating"
 mean_rating <- unique(recipes_rate[, lapply(.SD, mean, na.rm=TRUE), by=recipe_id, .SDcols=h.1])
 names(mean_rating)[2] <- "mean_rating"
 
 
 # --> recipe age in weeks calculation
-recipes_create <- recipes_create[, age_in_weeks :=ceiling(difftime(as.Date("31-12-2019", "%d-%m-%Y"), recipes_create$timestamp, units = "weeks"))]
+recipes_create <- recipes_create[, age_in_weeks :=ceiling(difftime(as.Date("31-12-2019", "%d-%m-%Y"), 
+                                                                   recipes_create$timestamp, units = "weeks"))]
 
 
 # --> nr comments calculation
@@ -70,25 +84,22 @@ recipes_create <- merge(x=recipes_create, y=users[, c("user_id", "country")], by
 
 
 # --> type extraction
-table_type <- recipe_ingredients_mapping %>% subset(type == "vegan" | type == "vegetarian" | 
-                                                      type == "fish" | type == "meat")
+table_type <- recipe_ingredients_mapping %>% subset(type == "vegan" | type == "vegetarian" | type == "meat")
 
 table_type$raw_type <- sample(1:nrow(table_type))
 
 table_type <- table_type %>%
-  mutate(raw_type = ifelse(type == "meat", 4, raw_type)) %>%
-  mutate(raw_type = ifelse(type == "fish", 3, raw_type)) %>%
+  mutate(raw_type = ifelse(type == "meat", 3, raw_type)) %>%
   mutate(raw_type = ifelse(type == "vegetarian", 2, raw_type)) %>%
   mutate(raw_type = ifelse(type == "vegan", 1, raw_type))
 
-h_type <- names(table_type)[8] # raw_type
+h_type <- "raw_type"
 
 recipe_type <- unique(table_type[, lapply(.SD, max, na.rm=TRUE), by=recipe_id, .SDcols=h_type])
 
 recipe_type$type <- sample(1:nrow(recipe_type))
 recipe_type <- recipe_type %>%
-  mutate(type = ifelse(raw_type ==  4,"meat", type)) %>%
-  mutate(type = ifelse(raw_type ==  3 , "fish",  type)) %>%
+  mutate(type = ifelse(raw_type ==  3,"meat", type)) %>%
   mutate(type = ifelse(raw_type == 2, "vegetarian", type)) %>%
   mutate(type = ifelse(raw_type ==  1,"vegan", type))
 
@@ -130,10 +141,11 @@ table_first_part <- table_first_part %>%
 
 table_first_part_2 <- table_first_part[complete.cases(table_first_part[ , "cooking_skills"]),]
 
-pdf("plotcook.pdf")
+pdf("plot_cook.pdf")
 ggplot(table_first_part_2)+
-  geom_histogram(aes(x=cooking_level, fill=cooking_skills), bins = 8) + labs(title="Distribution of cooking skills",
-                                                                             x="Level of cooking skills", y = "Count") + theme_bw()
+  geom_histogram(aes(x=cooking_level, fill=cooking_skills), 
+                 bins = 8) + labs(title="Distribution of cooking skills", 
+                                  x="Level of cooking skills", y = "Count") + theme_bw()
 dev.off()
 
 
@@ -143,12 +155,11 @@ table_first_part$overall_type <- sample(1:nrow(table_first_part))
 table_first_part <- table_first_part %>%
   mutate(overall_type = ifelse(type == "vegan", 1, overall_type)) %>%
   mutate(overall_type = ifelse(type == "vegetarian", 2, overall_type)) %>%
-  mutate(overall_type = ifelse(type == "fish", 3, overall_type)) %>%
-  mutate(overall_type = ifelse(type == "meat", 4, overall_type))
+  mutate(overall_type = ifelse(type == "meat", 3, overall_type))
 
 table_first_part_3 <- table_first_part[complete.cases(table_first_part[ , "type"]),]
 
-pdf("plottype.pdf")
+pdf("plot_type.pdf")
 ggplot(table_first_part_3)+
   geom_histogram(aes(x=overall_type, fill=type), bins = 8) + labs(title="Distribution of recipe types",
                                                                   x="Recipe types", y = "Count") + theme_bw()
@@ -164,12 +175,14 @@ dev.off()
 
 pdf("plot_adopters.pdf")
 ggplot(table_first_part, aes(x = nr_adopters,
-                             y = co2emissions)) + geom_point(size=2, shape=23, color="sienna2", alpha = 0.3) + scale_y_continuous(trans = 'log2') + scale_x_continuous(trans = 'log2')
+                             y = co2emissions)) + geom_point(size=2, shape=23, color="sienna2", 
+                              alpha = 0.3) + scale_y_continuous(trans = 'log2') + scale_x_continuous(trans = 'log2')
 dev.off()
 
 pdf("plot_rate.pdf")
 ggplot(table_first_part, aes(x = mean_rating,
-                             y = co2emissions)) + geom_point(size=2, shape=23, color="pink", alpha = 0.3) + scale_y_continuous(trans = 'log2')
+                             y = co2emissions)) + geom_point(size=2, shape=23, color="pink", 
+                                                             alpha = 0.3) + scale_y_continuous(trans = 'log2')
 dev.off()
 
 pdf("plot_comments.pdf")
@@ -197,7 +210,6 @@ dev.off()
 pdf("plot_boxtype.pdf")
 pp = ggplot(table_first_part[table_first_part$type=="vegan"
                             | table_first_part$type=="vegetarian"
-                            | table_first_part$type=="fish"
                             | table_first_part$type=="meat",],
            aes(x=overall_type, y=co2emissions, fill=type))
 pp + geom_boxplot()
@@ -207,12 +219,15 @@ dev.off()
 ## 3) Linear regressions
 ## What is the most used ingredient and the respective emission?
 ## Which ingredients have the lowest/ highest emissions?
-my_ingredient_emission <- data.table(ingredient=recipe_ingredients_mapping$raw, emissions=recipe_ingredients_mapping$emissions, type=recipe_ingredients_mapping$type)
+my_ingredient_emission <- data.table(ingredient=recipe_ingredients_mapping$raw, 
+                                     emissions=recipe_ingredients_mapping$emissions, 
+                                     type=recipe_ingredients_mapping$type)
 my_ingredient_emission <- unique(my_ingredient_emission)
 my_ingredient_emission <- my_ingredient_emission[complete.cases(my_ingredient_emission[ , "emissions"]),] # emissions or 2
 freq_ingredients <- as.data.frame(table(recipe_ingredients_mapping$raw))
 freq_ingredients <- rename(freq_ingredients, ingredient = Var1)
-my_ingredient_emission <- merge(x=my_ingredient_emission, y=freq_ingredients[, c("ingredient", "Freq")], by="ingredient", all.x = TRUE)
+my_ingredient_emission <- merge(x=my_ingredient_emission, y=freq_ingredients[, c("ingredient", "Freq")], 
+                                by="ingredient", all.x = TRUE)
 
 order.emissions <- order(my_ingredient_emission$emissions)
 my_ingredient_emission <- my_ingredient_emission[order.emissions,]
@@ -269,3 +284,16 @@ ggplot(freq_dynamics, aes(x = Year, y = Freq)) +
   # xlim(2009, 2021) +
   theme_light()
 dev.off()
+
+
+dbWriteTable(db, "monica_recipe_emission",  total_co2_emission, row.names=FALSE)
+dbWriteTable(db, "monica_recipe_type",  recipe_type, row.names=FALSE)
+
+
+
+
+
+
+
+
+
