@@ -170,7 +170,8 @@ dev.off()
 # Scatterplots
 pdf("plot_age.pdf")
 ggplot(table_first_part[age_of_creator>0 & age_of_creator < 100], aes(x = age_of_creator,
-                      y = co2emissions)) + geom_point(size=2, shape=23, color="palegreen4", alpha = 0.3)
+                      y = co2emissions)) + geom_point(size=2, shape=23, color="palegreen4", 
+                                            alpha = 0.3) + scale_y_continuous(trans = 'log2') 
 dev.off()
 
 pdf("plot_adopters.pdf")
@@ -187,17 +188,19 @@ dev.off()
 
 pdf("plot_comments.pdf")
 ggplot(table_first_part, aes(x = nr_comments,
-                             y = co2emissions)) + geom_point(size=2, shape=23, color="thistle3", alpha = 0.3)
+                             y = co2emissions)) + geom_point(size=2, shape=23, color="thistle3", 
+                                      alpha = 0.3) + scale_y_continuous(trans = 'log2') + scale_x_continuous(trans = 'log2')
 dev.off()
 
 pdf("plot_life.pdf")
 ggplot(table_first_part, aes(x = age_in_weeks,
-                             y = co2emissions)) + geom_point(size=2, shape=23, color="royalblue1", alpha = 0.3)
+                             y = co2emissions)) + geom_point(size=2, shape=23, color="royalblue1", 
+                                          alpha = 0.3) + scale_y_continuous(trans = 'log2') 
 dev.off()
 
 
 # Boxplots
-pdf("plot_boxcookingskills.pdf")
+pdf("plot_box_cookingskills.pdf")
 p = ggplot(table_first_part[table_first_part$cooking_skills=="beginner"
                             | table_first_part$cooking_skills=="amateurchef"
                             | table_first_part$cooking_skills=="advanced"
@@ -207,7 +210,7 @@ p + geom_boxplot()
 dev.off()
 
 
-pdf("plot_boxtype.pdf")
+pdf("plot_box_type.pdf")
 pp = ggplot(table_first_part[table_first_part$type=="vegan"
                             | table_first_part$type=="vegetarian"
                             | table_first_part$type=="meat",],
