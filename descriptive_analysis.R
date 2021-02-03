@@ -131,24 +131,6 @@ sumary_statistics <- table_first_part %>%
 stargazer(as.data.frame(sumary_statistics), type = "text")
 
 
-# type 
-table_first_part$graph_type <- sample(1:nrow(table_first_part))
-
-table_first_part <- table_first_part %>%
-  mutate(graph_type = ifelse(type == "vegan", 1, graph_type)) %>%
-  mutate(graph_type = ifelse(type == "vegetarian", 2, graph_type)) %>%
-  mutate(graph_type = ifelse(type == "meat", 3, graph_type)) 
-
-table_first_part_11 <- table_first_part[complete.cases(table_first_part[ , "type"]),]
-
-pdf("plot_recipe_type.pdf")
-ggplot(table_first_part_11)+
-  geom_histogram(aes(x=graph_type, fill=type), 
-                 bins = 8) + labs(title="Distribution of recipe types", 
-                                  x="Type", y = "Count") + theme_minimal()
-dev.off()
-
-
 # cooking skills
 table_first_part$cooking_level <- sample(1:nrow(table_first_part))
 
