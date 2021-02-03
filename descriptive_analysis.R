@@ -167,55 +167,82 @@ dev.off()
 
 
 ## 2) Scatterplots and Boxplots
+# prep
+
+sub_age <- data.table(emissions=table_first_part$co2emissions, age_of_creator=table_first_part$age_of_creator)
+sub_age <- sub_age[complete.cases(sub_age), ]
+sub_age <- sub_age[sub_age$emissions != 0, ]
+sub_age$ln_emissions <- log(sub_age$emissions, base = exp(1))
+sub_age <- sub_age[sub_age$age_of_creator > 0]
+
+sub_adopters <- data.table(emissions=table_first_part$co2emissions, nr_adopters=table_first_part$nr_adopters)
+sub_adopters <- sub_adopters[complete.cases(sub_adopters), ]
+sub_adopters <- sub_adopters[sub_adopters$emissions != 0, ]
+sub_adopters$ln_emissions <- log(sub_adopters$emissions, base = exp(1))
+sub_adopters$ln_adopters <- log(sub_adopters$nr_adopters, base = exp(1))
+
+sub_rate <- data.table(emissions=table_first_part$co2emissions, mean_rating=table_first_part$mean_rating)
+sub_rate <- sub_rate[complete.cases(sub_rate), ]
+sub_rate <- sub_rate[sub_rate$emissions != 0, ]
+sub_rate$ln_emissions <- log(sub_rate$emissions, base = exp(1))
+
+sub_comments <- data.table(emissions=table_first_part$co2emissions, nr_comments=table_first_part$nr_comments)
+sub_comments <- sub_comments[complete.cases(sub_comments), ]
+sub_comments <- sub_comments[sub_comments$emissions != 0, ]
+sub_comments$ln_emissions <- log(sub_comments$emissions, base = exp(1))
+sub_comments$ln_comments <- log(sub_comments$nr_comments, base = exp(1))
+
+sub_life <- data.table(emissions=table_first_part$co2emissions, age_in_weeks=table_first_part$age_in_weeks)
+sub_life <- sub_life[complete.cases(sub_life), ]
+sub_life <- sub_life[sub_life$emissions != 0, ]
+sub_life$ln_emissions <- log(sub_life$emissions, base = exp(1))
+
 # Scatterplots
 pdf("plot_age.pdf")
-ggplot(table_first_part[age_of_creator>0 & age_of_creator < 100], aes(x = age_of_creator,
-                      y = co2emissions)) + geom_point(size=2, shape=23, color="palegreen4", 
-                                            alpha = 0.3) + scale_y_continuous(trans = 'log2') 
+ggplot(sub_age, aes(x = age_of_creator,
+                    y = ln_emissions)) + geom_point(size=2, shape=23, color="palegreen4", alpha = 0.8) + theme_minimal()
 dev.off()
 
 pdf("plot_adopters.pdf")
-ggplot(table_first_part, aes(x = nr_adopters,
-                             y = co2emissions)) + geom_point(size=2, shape=23, color="sienna2", 
-                              alpha = 0.3) + scale_y_continuous(trans = 'log2') + scale_x_continuous(trans = 'log2')
+ggplot(sub_adopters, aes(x = ln_adopters,
+                         y = ln_emissions)) + geom_point(size=2, shape=23, color="sienna2", 
+                                                         alpha = 0.8) + theme_minimal() # + scale_y_continuous(trans = 'log2') + scale_x_continuous(trans = 'log2')
 dev.off()
 
 pdf("plot_rate.pdf")
-ggplot(table_first_part, aes(x = mean_rating,
-                             y = co2emissions)) + geom_point(size=2, shape=23, color="pink", 
-                                                             alpha = 0.3) + scale_y_continuous(trans = 'log2')
+ggplot(sub_rate, aes(x = mean_rating,
+                     y = ln_emissions)) + geom_point(size=2, shape=23, color="pink", 
+                                                     alpha = 0.8) + theme_minimal() # + scale_y_continuous(trans = 'log2')
 dev.off()
 
 pdf("plot_comments.pdf")
-ggplot(table_first_part, aes(x = nr_comments,
-                             y = co2emissions)) + geom_point(size=2, shape=23, color="thistle3", 
-                                      alpha = 0.3) + scale_y_continuous(trans = 'log2') + scale_x_continuous(trans = 'log2')
+ggplot(sub_comments, aes(x = ln_comments,
+                         y = ln_emissions)) + geom_point(size=2, shape=23, color="thistle3", alpha = 0.8) + theme_minimal()
 dev.off()
 
 pdf("plot_life.pdf")
-ggplot(table_first_part, aes(x = age_in_weeks,
-                             y = co2emissions)) + geom_point(size=2, shape=23, color="royalblue1", 
-                                          alpha = 0.3) + scale_y_continuous(trans = 'log2') 
+ggplot(sub_life, aes(x = age_in_weeks,
+                     y = ln_emissions)) + geom_point(size=2, shape=23, color="royalblue1", alpha = 0.8) + theme_minimal()
 dev.off()
 
 
 # Boxplots
-pdf("plot_box_cookingskills.pdf")
+pdf("plot_boxcookingskills.pdf")
 p = ggplot(table_first_part[table_first_part$cooking_skills=="beginner"
                             | table_first_part$cooking_skills=="amateurchef"
                             | table_first_part$cooking_skills=="advanced"
                             | table_first_part$cooking_skills=="chefcook",],
-           aes(x=cooking_level, y=co2emissions, fill=cooking_skills))
-p + geom_boxplot()
+           aes(x=cooking_level, y=co2emissions, color=cooking_skills))
+p + geom_boxplot() + theme_linedraw()
 dev.off()
 
 
-pdf("plot_box_type.pdf")
+pdf("plot_boxtype.pdf")
 pp = ggplot(table_first_part[table_first_part$type=="vegan"
-                            | table_first_part$type=="vegetarian"
-                            | table_first_part$type=="meat",],
-           aes(x=overall_type, y=co2emissions, fill=type))
-pp + geom_boxplot()
+                             | table_first_part$type=="vegetarian"
+                             | table_first_part$type=="meat",],
+            aes(x=overall_type, y=co2emissions, color=type))
+pp + geom_boxplot() + theme_linedraw()
 dev.off()
 
 
@@ -238,21 +265,16 @@ my_ingredient_emission$rank <- rank(my_ingredient_emission$emissions)
 
 write.csv(my_ingredient_emission, "my_ingredient_emission.csv")
 
-## How does emissions influence nr. of adopters?
-sub_2 <- data.table(emissions=table_first_part$co2emissions, nr_adopters=table_first_part$nr_adopters)
-sub_2 <- sub_2[complete.cases(sub_2[ , "emissions"]),] # emissions or 2
-lm_sub_2 <- lm(nr_adopters ~ emissions, data = sub_2)
 
-## How does emissions influence nr. of comments?
-sub_3 <- data.table(emissions=table_first_part$co2emissions, nr_comments=table_first_part$nr_comments)
-sub_3 <- sub_3[complete.cases(sub_3[ , "emissions"]),] # emissions or 2
-lm_sub_3 <- lm(nr_comments ~ emissions, data = sub_3)
+## How does emissions influence nr. of adopters?
+lm_sub_adopters <- lm(ln_adopters ~ ln_emissions, data = sub_adopters)
+
+## How does emissions influence nr. of comments? 
+lm_sub_comments <- lm(ln_comments ~ ln_emissions, data = sub_comments)
 
 ## How does emissions influence mean_rating?
-sub_4 <- data.table(emissions=table_first_part$co2emissions, mean_rating=table_first_part$mean_rating)
-sub_4 <- sub_4[complete.cases(sub_4[ , "emissions"]),] # emissions or 2
-lm_sub_4 <- lm(mean_rating ~ emissions, data = sub_4)
-stargazer(lm_sub_2, lm_sub_3, lm_sub_4, type = "text")
+lm_sub_rate <- lm(mean_rating ~ ln_emissions, data = sub_rate)
+stargazer(lm_sub_adopters, lm_sub_comments, lm_sub_rate, type = "text")
 
 ## Does age of the creator, type (vegan - meat), and cooking skills (beginner - chefcook) influence emissions?
 sub_one <- data.table(recipe_id = table_first_part$recipe_id,
