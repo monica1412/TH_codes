@@ -183,6 +183,10 @@ names(final_fitgsg)[3] <- "fitgsg_c"
 names(final_fitgsg)[4] <- "fitgsg_m"
 
 final_diff <- merge(final_diff, final_fitgsg, by="nr")
+final_diff$nr <- NULL
+final_diff$recipe_id <- NULL
+
+aggregated_diffusion <- aggregate(final_diff[, 2:12], list(final_diff$type), mean)
 
 
 # dbWriteTable(db, "monica_diffusion",  final_diff, row.names=FALSE)
