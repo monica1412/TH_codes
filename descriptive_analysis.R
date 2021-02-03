@@ -143,9 +143,10 @@ table_first_part <- table_first_part %>%
 table_first_part_2 <- table_first_part[complete.cases(table_first_part[ , "cooking_skills"]),]
 
 pdf("plot_cook.pdf")
-ggplot(table_first_part_2)+
-  geom_histogram(aes(x=cooking_level, fill=cooking_skills), 
-                 bins = 8) + labs(title="Distribution of cooking skills", 
+ggplot(table_first_part_2, aes(x=cooking_level, fill=cooking_skills)) +
+  geom_histogram(color = "white", bins = 8) + 
+  scale_fill_manual(values = c("darkolivegreen3", "darkolivegreen2", "darkolivegreen1", "darkolivegreen4")) +
+  labs(title="Distribution of cooking skills", 
                                   x="Level of cooking skills", y = "Count") + theme_bw()
 dev.off()
 
@@ -223,7 +224,8 @@ dev.off()
 
 pdf("plot_life.pdf")
 ggplot(sub_life, aes(x = age_in_weeks,
-                     y = ln_emissions)) + geom_point(size=2, shape=23, color="royalblue1", alpha = 0.8) + theme_minimal()
+                     y = ln_emissions)) + geom_point(size=2, shape=23, 
+                                                     color="royalblue1", alpha = 0.8) + theme_minimal()
 dev.off()
 
 
