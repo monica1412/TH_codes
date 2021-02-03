@@ -228,7 +228,7 @@ dev.off()
 
 
 # Boxplots
-pdf("plot_boxcookingskills.pdf")
+pdf("boxplot_cooking_skills.pdf")
 p = ggplot(table_first_part[table_first_part$cooking_skills=="beginner"
                             | table_first_part$cooking_skills=="amateurchef"
                             | table_first_part$cooking_skills=="advanced"
@@ -238,7 +238,7 @@ p + geom_boxplot() + theme_linedraw()
 dev.off()
 
 
-pdf("plot_boxtype.pdf")
+pdf("boxplot_type.pdf")
 pp = ggplot(table_first_part[table_first_part$type=="vegan"
                              | table_first_part$type=="vegetarian"
                              | table_first_part$type=="meat",],
@@ -259,21 +259,30 @@ freq_ingredients <- as.data.frame(table(recipe_ingredients_mapping$raw))
 freq_ingredients <- rename(freq_ingredients, ingredient = Var1)
 my_ingredient_emission <- merge(x=my_ingredient_emission, y=freq_ingredients[, c("ingredient", "Freq")], 
                                 by="ingredient", all.x = TRUE)
+my_ingredient_emission$rank <- rank(my_ingredient_emission$emissions)
 
 order.emissions <- order(my_ingredient_emission$emissions)
 my_ingredient_emission <- my_ingredient_emission[order.emissions,]
-my_ingredient_emission$rank <- rank(my_ingredient_emission$emissions)
+highest_emission <- tail(my_ingredient_emission, 5)
+write.csv(highest_emission, "highest_emission.csv")
+lowest_emission <- head(my_ingredient_emission, 5)
+write.csv(lowest_emission, "lowest_emission.csv")
 
-write.csv(my_ingredient_emission, "my_ingredient_emission.csv")
+order.freq <- order(my_ingredient_emission$Freq)
+my_ingredient_emission <- my_ingredient_emission[order.freq,]
+highest_use <- tail(my_ingredient_emission, 5)
+write.csv(highest_use, "highest_use.csv")
+lowest_use <- head(my_ingredient_emission, 5)
+write.csv(lowest_use, "lowest_use.csv")
 
 
-## How does emissions influence nr. of adopters?
+## How do emissions influence nr. of adopters?
 lm_sub_adopters <- lm(ln_adopters ~ ln_emissions, data = sub_adopters)
 
-## How does emissions influence nr. of comments? 
+## How do emissions influence nr. of comments? 
 lm_sub_comments <- lm(ln_comments ~ ln_emissions, data = sub_comments)
 
-## How does emissions influence mean_rating?
+## How do emissions influence mean_rating?
 lm_sub_rate <- lm(mean_rating ~ ln_emissions, data = sub_rate)
 stargazer(lm_sub_adopters, lm_sub_comments, lm_sub_rate, type = "text")
 
