@@ -286,18 +286,18 @@ lm_sub_comments <- lm(ln_comments ~ ln_emissions, data = sub_comments)
 lm_sub_rate <- lm(mean_rating ~ ln_emissions, data = sub_rate)
 stargazer(lm_sub_adopters, lm_sub_comments, lm_sub_rate, type = "text")
 
-## Does age of the creator, type (vegan - meat), and cooking skills (beginner - chefcook) influence emissions?
-sub_one <- data.table(recipe_id = table_first_part$recipe_id,
-                      age_of_creator = table_first_part$age_of_creator,
+## Do age of the creator, life of recipe, type, cooking skills, (and country) influence emissions?
+sub_one <- data.table(age_of_creator = table_first_part$age_of_creator,
+                      age_of_recipe = table_first_part$age_in_weeks,
                       type = table_first_part$type,
                       coooking_skills = table_first_part$cooking_skills,
                       country = table_first_part$country,
                       emissions = table_first_part$co2emissions)
 sub_one <- sub_one[complete.cases(sub_one),]
+sub_one$ln_emissions <- log(sub_one$emissions, base = exp(1))
 
-lm_tot <- lm(emissions ~ age_of_creator + type + coooking_skills + country, data = sub_one)
-
-# lm_tot <- lm(emissions ~ age_of_creator + type + coooking_skills, data = sub_one)
+# lm_tot <- lm(ln_emissions ~ age_of_creator + age_of_recipe + type + coooking_skills + country, data = sub_one)
+lm_tot <- lm(ln_emissions ~ age_of_creator + age_of_recipe + type + coooking_skills, data = sub_one)
 
 stargazer(lm_tot, type = "text")
 
