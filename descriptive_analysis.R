@@ -144,10 +144,10 @@ table_first_part_2 <- table_first_part[complete.cases(table_first_part[ , "cooki
 
 pdf("plot_cook.pdf")
 ggplot(table_first_part_2, aes(x=cooking_level, fill=cooking_skills)) +
-  geom_histogram(color = "white", bins = 8) + 
+  geom_histogram(color = "darkolivegreen", bins = 8) + 
   scale_fill_manual(values = c("darkolivegreen3", "darkolivegreen2", "darkolivegreen1", "darkolivegreen4")) +
   labs(title="Distribution of cooking skills", 
-                                  x="Level of cooking skills", y = "Count") + theme_bw()
+                                  x="Level of cooking skills", y = "Count") + theme_minimal()
 dev.off()
 
 
@@ -162,9 +162,10 @@ table_first_part <- table_first_part %>%
 table_first_part_3 <- table_first_part[complete.cases(table_first_part[ , "type"]),]
 
 pdf("plot_type.pdf")
-ggplot(table_first_part_3)+
-  geom_histogram(aes(x=overall_type, fill=type), bins = 8) + labs(title="Distribution of recipe types",
-                                                                  x="Recipe types", y = "Count") + theme_bw()
+ggplot(table_first_part_3, aes(x=overall_type, fill=type)) +
+  geom_histogram(color = "white", bins = 8) + 
+  scale_fill_manual(values = c("deepskyblue1", "deepskyblue3", "deepskyblue4")) +
+  labs(title="Distribution of recipe types", x="Recipe types", y = "Count") + theme_minimal()
 dev.off()
 
 
