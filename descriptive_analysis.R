@@ -315,9 +315,8 @@ freq_dynamics$Year = as.numeric(levels(freq_dynamics$Year))[freq_dynamics$Year]
 pdf("plot_dymanics.pdf")
 ggplot(freq_dynamics, aes(x = Year, y = Freq)) +
   geom_line(aes(color = Type), size = 1) +
-  # ylim(1000, 1400) +
-  # xlim(2009, 2021) +
-  theme_light()
+  scale_x_continuous(breaks=c(2009, 2012, 2015, 2018, 2020)) +
+  theme_minimal()
 dev.off()
 
 
