@@ -188,6 +188,7 @@ final_diff$recipe_id <- NULL
 
 aggregated_diffusion <- aggregate(final_diff[, 2:12], list(final_diff$type), mean)
 
+write.csv(aggregated_diffusion, "aggregated_diffusion.csv")
 
 # dbWriteTable(db, "monica_diffusion",  final_diff, row.names=FALSE)
 
