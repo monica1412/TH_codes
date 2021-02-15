@@ -106,7 +106,6 @@ recipe_type <- recipe_type %>%
 
 ### table first part creation ###
 table_first_part <- data.table(recipe_id=recipes$recipe_id)
-
 table_first_part <- merge(x=table_first_part, y=recipe_type[, c("recipe_id", "type")], by="recipe_id", all.x = TRUE)
 table_first_part <- merge(x=table_first_part, y=recipes_create[, c("recipe_id", "cooking_skills")], by="recipe_id", all.x = TRUE)
 table_first_part <- merge(x=table_first_part, y=recipes_create[, c("recipe_id", "age_of_creator")], by="recipe_id", all.x = TRUE)
@@ -118,10 +117,19 @@ table_first_part <- merge(x=table_first_part, y=recipes_create[, c("recipe_id", 
 table_first_part <- merge(x=table_first_part, y=recipes_create[, c("recipe_id", "country")], by="recipe_id", all.x = TRUE)
 table_first_part <- merge(x=table_first_part, y=recipes_create[, c("recipe_id", "timestamp")], by="recipe_id", all.x = TRUE)
 table_first_part <- subset(table_first_part, age_of_creator > 7 & age_of_creator < 81)
+table_first_part <- transform(table_first_part, age_in_weeks = as.numeric(age_in_weeks))
 
 #####
 ##### INGREDIENTS AND CO2 SCORES #####
 #####
+
+table_first_part_hist <- table_first_part[complete.cases(type), ]
+pdf("hist_emission.pdf")
+ggplot(table_first_part_hist, aes(x=co2emissions, fill=type)) +
+  geom_histogram(color = "white") + 
+  labs(title="CO2 Emission by recipe", x="Recipes", y = "Emission") + 
+  theme_minimal()
+dev.off()
 
 ## 1) Table of summary statistics
 
@@ -270,12 +278,12 @@ dev.off()
 ## 3) Linear regressions
 ## What is the most used ingredient and the respective emission?
 ## Which ingredients have the lowest/ highest emissions?
-my_ingredient_emission <- data.table(ingredient=recipe_ingredients_mapping$raw, 
+my_ingredient_emission <- data.table(ingredient=recipe_ingredients_mapping$clean, 
                                      emissions=recipe_ingredients_mapping$emissions, 
                                      type=recipe_ingredients_mapping$type)
 my_ingredient_emission <- unique(my_ingredient_emission)
-my_ingredient_emission <- my_ingredient_emission[complete.cases(my_ingredient_emission[ , "emissions"]),] # emissions or 2
-freq_ingredients <- as.data.frame(table(recipe_ingredients_mapping$raw))
+my_ingredient_emission <- my_ingredient_emission[complete.cases(my_ingredient_emission[ , "emissions"]),] 
+freq_ingredients <- as.data.frame(table(recipe_ingredients_mapping$clean))
 freq_ingredients <- rename(freq_ingredients, ingredient = Var1)
 my_ingredient_emission <- merge(x=my_ingredient_emission, y=freq_ingredients[, c("ingredient", "Freq")], 
                                 by="ingredient", all.x = TRUE)
