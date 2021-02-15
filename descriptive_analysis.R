@@ -117,7 +117,7 @@ table_first_part <- merge(x=table_first_part, y=recipe_comments[, c("recipe_id",
 table_first_part <- merge(x=table_first_part, y=recipes_create[, c("recipe_id", "age_in_weeks")], by="recipe_id", all.x = TRUE)
 table_first_part <- merge(x=table_first_part, y=recipes_create[, c("recipe_id", "country")], by="recipe_id", all.x = TRUE)
 table_first_part <- merge(x=table_first_part, y=recipes_create[, c("recipe_id", "timestamp")], by="recipe_id", all.x = TRUE)
-
+table_first_part <- subset(table_first_part, age_of_creator > 7 & age_of_creator < 81)
 
 #####
 ##### INGREDIENTS AND CO2 SCORES #####
@@ -145,9 +145,9 @@ table_first_part_2 <- table_first_part[complete.cases(table_first_part[ , "cooki
 pdf("plot_cook.pdf")
 ggplot(table_first_part_2, aes(x=cooking_level, fill=cooking_skills)) +
   geom_histogram(color = "darkolivegreen", bins = 8) + 
-  scale_fill_manual(values = c("darkolivegreen3", "darkolivegreen2", "darkolivegreen1", "darkolivegreen4")) +
-  labs(title="Distribution of cooking skills", 
-                                  x="Level of cooking skills", y = "Count") + theme_minimal()
+  scale_fill_manual(values = c("darkolivegreen4", "darkolivegreen3", "darkolivegreen1", "darkolivegreen")) +
+  labs(title="Distribution of cooking skills", x="Level of cooking skills", y = "Count") + 
+  theme_minimal()
 dev.off()
 
 
@@ -164,8 +164,9 @@ table_first_part_3 <- table_first_part[complete.cases(table_first_part[ , "type"
 pdf("plot_type.pdf")
 ggplot(table_first_part_3, aes(x=overall_type, fill=type)) +
   geom_histogram(color = "white", bins = 8) + 
-  scale_fill_manual(values = c("deepskyblue1", "deepskyblue3", "deepskyblue4")) +
-  labs(title="Distribution of recipe types", x="Recipe types", y = "Count") + theme_minimal()
+  scale_fill_manual(values = c("deepskyblue4", "deepskyblue3", "deepskyblue1")) +
+  labs(title="Distribution of recipe types", x="Recipe types", y = "Count") + 
+  scale_x_continuous(breaks=c(1, 2, 3)) + theme_minimal()
 dev.off()
 
 
@@ -203,30 +204,42 @@ sub_life$ln_emissions <- log(sub_life$emissions, base = exp(1))
 # Scatterplots
 pdf("plot_age.pdf")
 ggplot(sub_age, aes(x = age_of_creator,
-                    y = ln_emissions)) + geom_point(size=2, shape=23, color="palegreen4", alpha = 0.8) + theme_minimal()
+                    y = ln_emissions)) + geom_point(size=2, shape=23, color="palegreen4", alpha = 0.8) + 
+  labs(title="Relationship between emission and age of creator", 
+       x="Age of the creator of the recipe", y = "Emission (ln)") + 
+  theme_minimal()
 dev.off()
 
 pdf("plot_adopters.pdf")
 ggplot(sub_adopters, aes(x = ln_adopters,
-                         y = ln_emissions)) + geom_point(size=2, shape=23, color="sienna2", 
-                                                         alpha = 0.8) + theme_minimal() # + scale_y_continuous(trans = 'log2') + scale_x_continuous(trans = 'log2')
+                         y = ln_emissions)) + geom_point(size=2, shape=23, color="sienna2", alpha = 0.8) + 
+  labs(title="Relationship between emission and number of adopters", 
+       x="Number of adopters (ln)", y = "Emission (ln)") + 
+  theme_minimal() # + scale_y_continuous(trans = 'log2') + scale_x_continuous(trans = 'log2')
 dev.off()
 
 pdf("plot_rate.pdf")
-ggplot(sub_rate, aes(x = mean_rating,
-                     y = ln_emissions)) + geom_point(size=2, shape=23, color="pink", 
-                                                     alpha = 0.8) + theme_minimal() # + scale_y_continuous(trans = 'log2')
+ggplot(sub_rate, aes(x = mean_rating, y = ln_emissions)) + 
+  geom_point(size=2, shape=23, color="coral2", alpha = 0.8) + 
+  labs(title="Relationship between emission and recipe rate", 
+       x="Mean rating", y = "Emission (ln)") + 
+  theme_minimal() # + scale_y_continuous(trans = 'log2')
 dev.off()
 
 pdf("plot_comments.pdf")
-ggplot(sub_comments, aes(x = ln_comments,
-                         y = ln_emissions)) + geom_point(size=2, shape=23, color="thistle3", alpha = 0.8) + theme_minimal()
+ggplot(sub_comments, aes(x = ln_comments, y = ln_emissions)) + 
+  geom_point(size=2, shape=23, color="thistle3", alpha = 0.8) + 
+  labs(title="Relationship between emission and number of comments", 
+       x="Number of comments (ln)", y = "Emission (ln)") + 
+  theme_minimal()
 dev.off()
 
 pdf("plot_life.pdf")
-ggplot(sub_life, aes(x = age_in_weeks,
-                     y = ln_emissions)) + geom_point(size=2, shape=23, 
-                                                     color="royalblue1", alpha = 0.8) + theme_minimal()
+ggplot(sub_life, aes(x = age_in_weeks, y = ln_emissions)) + 
+  geom_point(size=2, shape=23, color="royalblue1", alpha = 0.8) +
+  labs(title="Relationship between emission and age of the recipe", 
+       x="Age (in weeks)", y = "Emission (ln)") + 
+  theme_minimal()
 dev.off()
 
 
@@ -236,8 +249,10 @@ p = ggplot(table_first_part[table_first_part$cooking_skills=="beginner"
                             | table_first_part$cooking_skills=="amateurchef"
                             | table_first_part$cooking_skills=="advanced"
                             | table_first_part$cooking_skills=="chefcook",],
-           aes(x=cooking_level, y=co2emissions, color=cooking_skills))
-p + geom_boxplot() + theme_linedraw()
+           aes(x=cooking_level, y=co2emissions, color=cooking_skills)) + 
+  labs(title="Distribution of emission according to cooking skills", 
+       x="Cooking skills", y = "Emission")
+p + geom_boxplot() + theme_minimal()
 dev.off()
 
 
@@ -245,8 +260,10 @@ pdf("boxplot_type.pdf")
 pp = ggplot(table_first_part[table_first_part$type=="vegan"
                              | table_first_part$type=="vegetarian"
                              | table_first_part$type=="meat",],
-            aes(x=overall_type, y=co2emissions, color=type))
-pp + geom_boxplot() + theme_linedraw()
+            aes(x=overall_type, y=co2emissions, color=type)) + 
+  labs(title="Distribution of emission according to recipe type", 
+  x="Recipe type", y = "Emission")
+pp + geom_boxplot() + theme_minimal()
 dev.off()
 
 
@@ -299,7 +316,6 @@ sub_one <- data.table(age_of_creator = table_first_part$age_of_creator,
 sub_one <- sub_one[complete.cases(sub_one),]
 sub_one$ln_emissions <- log(sub_one$emissions, base = exp(1))
 
-# lm_tot <- lm(ln_emissions ~ age_of_creator + age_of_recipe + type + coooking_skills + country, data = sub_one)
 lm_tot <- lm(ln_emissions ~ age_of_creator + age_of_recipe + type + coooking_skills, data = sub_one)
 
 stargazer(lm_tot, type = "text")
@@ -318,8 +334,9 @@ freq_dynamics$Year = as.numeric(levels(freq_dynamics$Year))[freq_dynamics$Year]
 pdf("plot_dymanics.pdf")
 ggplot(freq_dynamics, aes(x = Year, y = Freq)) +
   geom_line(aes(color = Type), size = 1) +
-  scale_x_continuous(breaks=c(2009, 2012, 2015, 2018, 2020)) +
-  theme_minimal()
+  scale_x_continuous(breaks=c(2009, 2012, 2015, 2018, 2020)) + 
+  labs(title="Number of recipes posted by year", 
+       x="Year", y = "Count") + theme_minimal()
 dev.off()
 
 
