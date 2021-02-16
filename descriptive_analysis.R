@@ -18,6 +18,7 @@ library(datasets)     # package containing many datasets
 library(purrr)        # enhanced features to deal with vectors and functions
 library(vtable)       # nice package for producing tables
 library(data.table)
+library(forcats)
 
 # Define connection parameters
 source("conf.R")
@@ -127,7 +128,7 @@ table_first_part_hist <- table_first_part[complete.cases(type), ]
 pdf("hist_emission.pdf")
 ggplot(table_first_part_hist, aes(x=co2emissions, fill=type)) +
   geom_histogram(color = "white") + 
-  labs(title="CO2 Emission by recipe", x="Recipes", y = "Emission") + 
+  labs(title="Frequency of emission by recipe type", x="Emission", y="Count") + 
   theme_minimal()
 dev.off()
 
@@ -211,19 +212,19 @@ sub_life$ln_emissions <- log(sub_life$emissions, base = exp(1))
 
 # Scatterplots
 pdf("plot_age.pdf")
-ggplot(sub_age, aes(x = age_of_creator,
-                    y = ln_emissions)) + geom_point(size=2, shape=23, color="palegreen4", alpha = 0.8) + 
+ggplot(sub_age, aes(x = age_of_creator, y = ln_emissions)) + 
+  geom_point(size=2, shape=23, color="palegreen4", alpha = 0.8) + 
   labs(title="Relationship between emission and age of creator", 
        x="Age of the creator of the recipe", y = "Emission (ln)") + 
   theme_minimal()
 dev.off()
 
 pdf("plot_adopters.pdf")
-ggplot(sub_adopters, aes(x = ln_adopters,
-                         y = ln_emissions)) + geom_point(size=2, shape=23, color="sienna2", alpha = 0.8) + 
+ggplot(sub_adopters, aes(x = ln_adopters, y = ln_emissions)) + 
+  geom_point(size=2, shape=23, color="sienna2", alpha = 0.8) + 
   labs(title="Relationship between emission and number of adopters", 
        x="Number of adopters (ln)", y = "Emission (ln)") + 
-  theme_minimal() # + scale_y_continuous(trans = 'log2') + scale_x_continuous(trans = 'log2')
+  theme_minimal() 
 dev.off()
 
 pdf("plot_rate.pdf")
