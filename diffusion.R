@@ -23,6 +23,7 @@ library(plyr)
 library(foreach)
 library(doMC)
 library(diffusion)
+library(gridExtra)
 
 
 # Source relevant files
@@ -192,6 +193,300 @@ write.csv(aggregated_diffusion, "aggregated_diffusion.csv")
 
 # dbWriteTable(db, "monica_diffusion",  final_diff, row.names=FALSE)
 
+
+### SCATTERPLOT BASS MODEL ###
+
+b_vegan_p <- ggplot(final_diff[which(final_diff$type=="vegan")], aes(x = co2emissions, y = fitbass_p)) + 
+  geom_point(size=2, shape=23, color="chartreuse4") + 
+  labs(x="Emission", y = "p (vegan)") + 
+  theme_minimal()
+
+b_vegan_q <- ggplot(final_diff[which(final_diff$type=="vegan")], aes(x = co2emissions, y = fitbass_q)) + 
+  geom_point(size=2, shape=23, color="chartreuse4") + 
+  labs(x="Emission", y = "q (vegan)") + 
+  theme_minimal()
+
+b_vegan_m <- ggplot(final_diff[which(final_diff$type=="vegan")], aes(x = co2emissions, y = fitbass_m)) + 
+  geom_point(size=2, shape=23, color="chartreuse4") + 
+  labs(x="Emission", y = "m (vegan)") + 
+  theme_minimal()
+
+
+b_vegetarian_p <- ggplot(final_diff[which(final_diff$type=="vegetarian")], aes(x = co2emissions, y = fitbass_p)) + 
+  geom_point(size=2, shape=23, color="dodgerblue") + 
+  labs(x="Emission", y = "p (vegetarian)") + 
+  theme_minimal()
+
+b_vegetarian_q <- ggplot(final_diff[which(final_diff$type=="vegetarian")], aes(x = co2emissions, y = fitbass_q)) + 
+  geom_point(size=2, shape=23, color="dodgerblue") + 
+  labs(x="Emission", y = "q (vegetarian)") + 
+  theme_minimal()
+
+b_vegetarian_m <- ggplot(final_diff[which(final_diff$type=="vegetarian")], aes(x = co2emissions, y = fitbass_m)) + 
+  geom_point(size=2, shape=23, color="dodgerblue") + 
+  labs(x="Emission", y = "m (vegetarian)") + 
+  theme_minimal()
+
+
+b_meat_p <- ggplot(final_diff[which(final_diff$type=="meat")], aes(x = co2emissions, y = fitbass_p)) + 
+  geom_point(size=2, shape=23, color="brown1") + 
+  labs(x="Emission", y = "p (meat)") + 
+  theme_minimal()
+
+b_meat_q <- ggplot(final_diff[which(final_diff$type=="meat")], aes(x = co2emissions, y = fitbass_q)) + 
+  geom_point(size=2, shape=23, color="brown1") + 
+  labs(x="Emission", y = "q (meat)") + 
+  theme_minimal()
+
+b_meat_m <- ggplot(final_diff[which(final_diff$type=="meat")], aes(x = co2emissions, y = fitbass_m)) + 
+  geom_point(size=2, shape=23, color="brown1") + 
+  labs(x="Emission", y = "m (meat)") + 
+  theme_minimal()
+
+
+pdf("plot_bass.pdf")
+grid.arrange(b_vegan_p, b_vegan_q, b_vegan_m, 
+             b_vegetarian_p, b_vegetarian_q, b_vegetarian_m, 
+             b_meat_p, b_meat_q, b_meat_m,
+             nrow = 3,   top = "Bass Model")
+dev.off()
+
+
+### SCATTERPLOT GOMPERTZ MODEL ###
+
+g_vegan_a <- ggplot(final_diff[which(final_diff$type=="vegan")], aes(x = co2emissions, y = fitgomp_a)) + 
+  geom_point(size=2, shape=24, color="chartreuse4") + 
+  labs(x="Emission", y = "a (vegan)") + 
+  theme_minimal()
+
+g_vegan_b <- ggplot(final_diff[which(final_diff$type=="vegan")], aes(x = co2emissions, y = fitgomp_b)) + 
+  geom_point(size=2, shape=24, color="chartreuse4") + 
+  labs(x="Emission", y = "b (vegan)") + 
+  theme_minimal()
+
+g_vegan_m <- ggplot(final_diff[which(final_diff$type=="vegan")], aes(x = co2emissions, y = fitgomp_m)) + 
+  geom_point(size=2, shape=24, color="chartreuse4") + 
+  labs(x="Emission", y = "m (vegan)") + 
+  theme_minimal()
+
+
+g_vegetarian_a <- ggplot(final_diff[which(final_diff$type=="vegetarian")], aes(x = co2emissions, y = fitgomp_a)) + 
+  geom_point(size=2, shape=24, color="dodgerblue") + 
+  labs(x="Emission", y = "a (vegetarian)") + 
+  theme_minimal()
+
+g_vegetarian_b <- ggplot(final_diff[which(final_diff$type=="vegetarian")], aes(x = co2emissions, y = fitgomp_b)) + 
+  geom_point(size=2, shape=24, color="dodgerblue") + 
+  labs(x="Emission", y = "b (vegetarian)") + 
+  theme_minimal()
+
+g_vegetarian_m <- ggplot(final_diff[which(final_diff$type=="vegetarian")], aes(x = co2emissions, y = fitgomp_m)) + 
+  geom_point(size=2, shape=24, color="dodgerblue") + 
+  labs(x="Emission", y = "m (vegetarian)") + 
+  theme_minimal()
+
+
+g_meat_a <- ggplot(final_diff[which(final_diff$type=="meat")], aes(x = co2emissions, y = fitgomp_a)) + 
+  geom_point(size=2, shape=24, color="brown1") + 
+  labs(x="Emission", y = "a (meat)") + 
+  theme_minimal()
+
+g_meat_b <- ggplot(final_diff[which(final_diff$type=="meat")], aes(x = co2emissions, y = fitgomp_b)) + 
+  geom_point(size=2, shape=24, color="brown1") + 
+  labs(x="Emission", y = "b (meat)") + 
+  theme_minimal()
+
+g_meat_m <- ggplot(final_diff[which(final_diff$type=="meat")], aes(x = co2emissions, y = fitgomp_m)) + 
+  geom_point(size=2, shape=24, color="brown1") + 
+  labs(x="Emission", y = "m (meat)") + 
+  theme_minimal()
+
+
+pdf("plot_gompertz.pdf")
+grid.arrange(g_vegan_a, g_vegan_b, g_vegan_m, 
+             g_vegetarian_a, g_vegetarian_b, g_vegetarian_m, 
+             g_meat_a, g_meat_b, g_meat_m,
+             nrow = 3,   top = "Gompertz Model")
+dev.off()
+
+
+### SCATTERPLOT SHIFTED GOMPERTZ MODEL ###
+
+gs_vegan_a <- ggplot(final_diff[which(final_diff$type=="vegan")], aes(x = co2emissions, y = fitgsg_a)) + 
+  geom_point(size=2, shape=21, color="chartreuse4") + 
+  labs(x="Emission", y = "a (vegan)") + 
+  theme_minimal()
+
+gs_vegan_b <- ggplot(final_diff[which(final_diff$type=="vegan")], aes(x = co2emissions, y = fitgsg_b)) + 
+  geom_point(size=2, shape=21, color="chartreuse4") + 
+  labs(x="Emission", y = "b (vegan)") + 
+  theme_minimal()
+
+gs_vegan_c <- ggplot(final_diff[which(final_diff$type=="vegan")], aes(x = co2emissions, y = fitgsg_c)) + 
+  geom_point(size=2, shape=21, color="chartreuse4") + 
+  labs(x="Emission", y = "c (vegan)") + 
+  theme_minimal()
+
+gs_vegan_m <- ggplot(final_diff[which(final_diff$type=="vegan")], aes(x = co2emissions, y = fitgsg_m)) + 
+  geom_point(size=2, shape=21, color="chartreuse4") + 
+  labs(x="Emission", y = "m (vegan)") + 
+  theme_minimal()
+
+
+gs_vegetarian_a <- ggplot(final_diff[which(final_diff$type=="vegetarian")], aes(x = co2emissions, y = fitgsg_a)) + 
+  geom_point(size=2, shape=21, color="dodgerblue") + 
+  labs(x="Emission", y = "a (vegetarian)") + 
+  theme_minimal()
+
+gs_vegetarian_b <- ggplot(final_diff[which(final_diff$type=="vegetarian")], aes(x = co2emissions, y = fitgsg_b)) + 
+  geom_point(size=2, shape=21, color="dodgerblue") + 
+  labs(x="Emission", y = "b (vegetarian)") + 
+  theme_minimal()
+
+gs_vegetarian_c <- ggplot(final_diff[which(final_diff$type=="vegetarian")], aes(x = co2emissions, y = fitgsg_c)) + 
+  geom_point(size=2, shape=21, color="dodgerblue") + 
+  labs(x="Emission", y = "c (vegetarian)") + 
+  theme_minimal()
+
+gs_vegetarian_m <- ggplot(final_diff[which(final_diff$type=="vegetarian")], aes(x = co2emissions, y = fitgsg_m)) + 
+  geom_point(size=2, shape=21, color="dodgerblue") + 
+  labs(x="Emission", y = "m (vegetarian)") + 
+  theme_minimal()
+
+
+gs_meat_a <- ggplot(final_diff[which(final_diff$type=="meat")], aes(x = co2emissions, y = fitgsg_a)) + 
+  geom_point(size=2, shape=21, color="brown1") + 
+  labs(x="Emission", y = "a (meat)") + 
+  theme_minimal()
+
+gs_meat_b <- ggplot(final_diff[which(final_diff$type=="meat")], aes(x = co2emissions, y = fitgsg_b)) + 
+  geom_point(size=2, shape=21, color="brown1") + 
+  labs(x="Emission", y = "b (meat)") + 
+  theme_minimal()
+
+gs_meat_c <- ggplot(final_diff[which(final_diff$type=="meat")], aes(x = co2emissions, y = fitgsg_c)) + 
+  geom_point(size=2, shape=21, color="brown1") + 
+  labs(x="Emission", y = "c (meat)") + 
+  theme_minimal()
+
+gs_meat_m <- ggplot(final_diff[which(final_diff$type=="meat")], aes(x = co2emissions, y = fitgsg_m)) + 
+  geom_point(size=2, shape=21, color="brown1") + 
+  labs(x="Emission", y = "m (meat)") + 
+  theme_minimal()
+
+
+pdf("plot_s_gompertz.pdf")
+grid.arrange(gs_vegan_a, gs_vegan_b, gs_vegan_c, gs_vegan_m, 
+             gs_vegetarian_a, gs_vegetarian_b, gs_vegetarian_c, gs_vegetarian_m, 
+             gs_meat_a, gs_meat_b, gs_meat_c, gs_meat_m,
+             nrow = 3,   top = "Shifted Gompertz Model")
+dev.off()
+
+
+
+
+### BOXPLOTS ###
+
+final_diff$overall_type <- sample(1:nrow(final_diff))
+
+final_diff <- final_diff %>%
+  mutate(overall_type = ifelse(type == "vegan", 1, overall_type)) %>%
+  mutate(overall_type = ifelse(type == "vegetarian", 2, overall_type)) %>%
+  mutate(overall_type = ifelse(type == "meat", 3, overall_type))
+
+## BOXPLOT BASS MODEL ##
+
+bb_p = ggplot(final_diff[final_diff$type=="vegan"
+                         | final_diff$type=="vegetarian"
+                         | final_diff$type=="meat",],
+              aes(x=overall_type, y=fitbass_p, color=type)) + 
+  labs(x="Recipe type", y = "p")
+bass_p <- bb_p + geom_boxplot() + theme_minimal()
+
+bb_q = ggplot(final_diff[final_diff$type=="vegan"
+                         | final_diff$type=="vegetarian"
+                         | final_diff$type=="meat",],
+              aes(x=overall_type, y=fitbass_q, color=type)) + 
+  labs(x="Recipe type", y = "q")
+bass_q <- bb_q + geom_boxplot() + theme_minimal()
+
+bb_m = ggplot(final_diff[final_diff$type=="vegan"
+                         | final_diff$type=="vegetarian"
+                         | final_diff$type=="meat",],
+              aes(x=overall_type, y=fitbass_m, color=type)) + 
+  labs(x="Recipe type", y = "m")
+bass_m <- bb_m + geom_boxplot() + theme_minimal()
+
+
+pdf("box_plot_bass.pdf")
+grid.arrange(bass_p, bass_q, bass_m,
+             nrow = 1,   top = "Bass Model")
+dev.off()
+
+
+## BOXPLOT GOMPERTZ MODEL ##
+
+gg_a = ggplot(final_diff[final_diff$type=="vegan"
+                         | final_diff$type=="vegetarian"
+                         | final_diff$type=="meat",],
+              aes(x=overall_type, y=fitgomp_a, color=type)) + 
+  labs(x="Recipe type", y = "a")
+gomp_a <- gg_a + geom_boxplot() + theme_minimal()
+
+gg_b = ggplot(final_diff[final_diff$type=="vegan"
+                         | final_diff$type=="vegetarian"
+                         | final_diff$type=="meat",],
+              aes(x=overall_type, y=fitgomp_b, color=type)) + 
+  labs(x="Recipe type", y = "b")
+gomp_b <- gg_b + geom_boxplot() + theme_minimal()
+
+gg_m = ggplot(final_diff[final_diff$type=="vegan"
+                         | final_diff$type=="vegetarian"
+                         | final_diff$type=="meat",],
+              aes(x=overall_type, y=fitgomp_m, color=type)) + 
+  labs(x="Recipe type", y = "m")
+gomp_m <- gg_m + geom_boxplot() + theme_minimal()
+
+pdf("box_plot_gompertz.pdf")
+grid.arrange(gomp_a, gomp_b, gomp_m,
+             nrow = 1,   top = "Gompertz Model")
+dev.off()
+
+
+## BOXPLOT SHIFTED GOMPERTZ MODEL ##
+
+gs_a = ggplot(final_diff[final_diff$type=="vegan"
+                         | final_diff$type=="vegetarian"
+                         | final_diff$type=="meat",],
+              aes(x=overall_type, y=fitgsg_a, color=type)) + 
+  labs(x="Recipe type", y = "a")
+gomp_s_a <- gs_a + geom_boxplot() + theme_minimal()
+
+gs_b = ggplot(final_diff[final_diff$type=="vegan"
+                         | final_diff$type=="vegetarian"
+                         | final_diff$type=="meat",],
+              aes(x=overall_type, y=fitgsg_b, color=type)) + 
+  labs(x="Recipe type", y = "b")
+gomp_s_b <- gs_b + geom_boxplot() + theme_minimal()
+
+gs_c = ggplot(final_diff[final_diff$type=="vegan"
+                         | final_diff$type=="vegetarian"
+                         | final_diff$type=="meat",],
+              aes(x=overall_type, y=fitgsg_c, color=type)) + 
+  labs(x="Recipe type", y = "c")
+gomp_s_c <- gs_c + geom_boxplot() + theme_minimal()
+
+gs_m = ggplot(final_diff[final_diff$type=="vegan"
+                         | final_diff$type=="vegetarian"
+                         | final_diff$type=="meat",],
+              aes(x=overall_type, y=fitgsg_m, color=type)) + 
+  labs(x="Recipe type", y = "m")
+gomp_s_m <- gs_m + geom_boxplot() + theme_minimal()
+
+pdf("box_plot_s_gompertz.pdf")
+grid.arrange(gomp_s_a, gomp_s_b, gomp_s_c, gomp_s_m,
+             nrow = 1,   top = "Shifted Gompertz Model")
+dev.off()
 
 
 
