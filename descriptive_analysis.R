@@ -125,10 +125,11 @@ table_first_part <- transform(table_first_part, age_in_weeks = as.numeric(age_in
 #####
 
 table_first_part_hist <- table_first_part[complete.cases(type), ]
+
 pdf("hist_emission.pdf")
 ggplot(table_first_part_hist, aes(x=co2emissions, fill=type)) +
   geom_histogram(color = "white") + 
-  labs(title="Frequency of emission by recipe type", x="Emission", y="Count") + 
+  labs(title="Frequency of emission by recipe type", x= bquote("g CO"[2]~.(paste0("-eq"))), y="Count") + 
   theme_minimal()
 dev.off()
 
@@ -215,7 +216,7 @@ pdf("plot_age.pdf")
 ggplot(sub_age, aes(x = age_of_creator, y = ln_emissions)) + 
   geom_point(size=2, shape=23, color="palegreen4", alpha = 0.8) + 
   labs(title="Relationship between emission and age of creator", 
-       x="Age of the creator of the recipe", y = "Emission (ln)") + 
+       x="Age of the creator of the recipe", y = bquote("g CO"[2]~.(paste0("-eq (ln)")))) + 
   theme_minimal()
 dev.off()
 
@@ -223,7 +224,7 @@ pdf("plot_adopters.pdf")
 ggplot(sub_adopters, aes(x = ln_adopters, y = ln_emissions)) + 
   geom_point(size=2, shape=23, color="sienna2", alpha = 0.8) + 
   labs(title="Relationship between emission and number of adopters", 
-       x="Number of adopters (ln)", y = "Emission (ln)") + 
+       x="Number of adopters (ln)", y = bquote("g CO"[2]~.(paste0("-eq")))) + 
   theme_minimal() 
 dev.off()
 
@@ -231,15 +232,15 @@ pdf("plot_rate.pdf")
 ggplot(sub_rate, aes(x = mean_rating, y = ln_emissions)) + 
   geom_point(size=2, shape=23, color="coral2", alpha = 0.8) + 
   labs(title="Relationship between emission and recipe rate", 
-       x="Mean rating", y = "Emission (ln)") + 
-  theme_minimal() # + scale_y_continuous(trans = 'log2')
+       x="Mean rating", y = bquote("g CO"[2]~.(paste0("-eq")))) + 
+  theme_minimal() 
 dev.off()
 
 pdf("plot_comments.pdf")
 ggplot(sub_comments, aes(x = ln_comments, y = ln_emissions)) + 
   geom_point(size=2, shape=23, color="thistle3", alpha = 0.8) + 
   labs(title="Relationship between emission and number of comments", 
-       x="Number of comments (ln)", y = "Emission (ln)") + 
+       x="Number of comments (ln)", y = bquote("g CO"[2]~.(paste0("-eq")))) + 
   theme_minimal()
 dev.off()
 
@@ -247,7 +248,7 @@ pdf("plot_life.pdf")
 ggplot(sub_life, aes(x = age_in_weeks, y = ln_emissions)) + 
   geom_point(size=2, shape=23, color="royalblue1", alpha = 0.8) +
   labs(title="Relationship between emission and age of the recipe", 
-       x="Age (in weeks)", y = "Emission (ln)") + 
+       x="Age (in weeks)", y = bquote("g CO"[2]~.(paste0("-eq")))) + 
   theme_minimal()
 dev.off()
 
@@ -260,7 +261,7 @@ p = ggplot(table_first_part[table_first_part$cooking_skills=="beginner"
                             | table_first_part$cooking_skills=="chefcook",],
            aes(x=cooking_level, y=co2emissions, color=cooking_skills)) + 
   labs(title="Distribution of emission according to cooking skills", 
-       x="Cooking skills", y = "Emission")
+       x="Cooking skills", y = bquote("g CO"[2]~.(paste0("-eq"))))
 p + geom_boxplot() + theme_minimal()
 dev.off()
 
@@ -271,7 +272,7 @@ pp = ggplot(table_first_part[table_first_part$type=="vegan"
                              | table_first_part$type=="meat",],
             aes(x=overall_type, y=co2emissions, color=type)) + 
   labs(title="Distribution of emission according to recipe type", 
-  x="Recipe type", y = "Emission")
+  x="Recipe type", y = bquote("g CO"[2]~.(paste0("-eq"))))
 pp + geom_boxplot() + theme_minimal()
 dev.off()
 

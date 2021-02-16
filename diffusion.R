@@ -198,49 +198,49 @@ write.csv(aggregated_diffusion, "aggregated_diffusion.csv")
 
 b_vegan_p <- ggplot(final_diff[which(final_diff$type=="vegan")], aes(x = co2emissions, y = fitbass_p)) + 
   geom_point(size=2, shape=23, color="chartreuse4") + 
-  labs(x="Emission", y = "p (vegan)") + 
+  labs(x= bquote("g CO"[2]~.(paste0("-eq"))), y = "p (vegan)") + 
   theme_minimal()
 
 b_vegan_q <- ggplot(final_diff[which(final_diff$type=="vegan")], aes(x = co2emissions, y = fitbass_q)) + 
   geom_point(size=2, shape=23, color="chartreuse4") + 
-  labs(x="Emission", y = "q (vegan)") + 
+  labs(x= bquote("g CO"[2]~.(paste0("-eq"))), y = "q (vegan)") + 
   theme_minimal()
 
 b_vegan_m <- ggplot(final_diff[which(final_diff$type=="vegan")], aes(x = co2emissions, y = fitbass_m)) + 
   geom_point(size=2, shape=23, color="chartreuse4") + 
-  labs(x="Emission", y = "m (vegan)") + 
+  labs(x= bquote("g CO"[2]~.(paste0("-eq"))), y = "m (vegan)") + 
   theme_minimal()
 
 
 b_vegetarian_p <- ggplot(final_diff[which(final_diff$type=="vegetarian")], aes(x = co2emissions, y = fitbass_p)) + 
   geom_point(size=2, shape=23, color="dodgerblue") + 
-  labs(x="Emission", y = "p (vegetarian)") + 
+  labs(x= bquote("g CO"[2]~.(paste0("-eq"))), y = "p (vegetarian)") + 
   theme_minimal()
 
 b_vegetarian_q <- ggplot(final_diff[which(final_diff$type=="vegetarian")], aes(x = co2emissions, y = fitbass_q)) + 
   geom_point(size=2, shape=23, color="dodgerblue") + 
-  labs(x="Emission", y = "q (vegetarian)") + 
+  labs(x= bquote("g CO"[2]~.(paste0("-eq"))), y = "q (vegetarian)") + 
   theme_minimal()
 
 b_vegetarian_m <- ggplot(final_diff[which(final_diff$type=="vegetarian")], aes(x = co2emissions, y = fitbass_m)) + 
   geom_point(size=2, shape=23, color="dodgerblue") + 
-  labs(x="Emission", y = "m (vegetarian)") + 
+  labs(x= bquote("g CO"[2]~.(paste0("-eq"))), y = "m (vegetarian)") + 
   theme_minimal()
 
 
 b_meat_p <- ggplot(final_diff[which(final_diff$type=="meat")], aes(x = co2emissions, y = fitbass_p)) + 
   geom_point(size=2, shape=23, color="brown1") + 
-  labs(x="Emission", y = "p (meat)") + 
+  labs(x= bquote("g CO"[2]~.(paste0("-eq"))), y = "p (meat)") + 
   theme_minimal()
 
 b_meat_q <- ggplot(final_diff[which(final_diff$type=="meat")], aes(x = co2emissions, y = fitbass_q)) + 
   geom_point(size=2, shape=23, color="brown1") + 
-  labs(x="Emission", y = "q (meat)") + 
+  labs(x= bquote("g CO"[2]~.(paste0("-eq"))), y = "q (meat)") + 
   theme_minimal()
 
 b_meat_m <- ggplot(final_diff[which(final_diff$type=="meat")], aes(x = co2emissions, y = fitbass_m)) + 
   geom_point(size=2, shape=23, color="brown1") + 
-  labs(x="Emission", y = "m (meat)") + 
+  labs(x= bquote("g CO"[2]~.(paste0("-eq"))), y = "m (meat)") + 
   theme_minimal()
 
 
@@ -256,49 +256,49 @@ dev.off()
 
 g_vegan_a <- ggplot(final_diff[which(final_diff$type=="vegan")], aes(x = co2emissions, y = fitgomp_a)) + 
   geom_point(size=2, shape=24, color="chartreuse4") + 
-  labs(x="Emission", y = "a (vegan)") + 
+  labs(x= bquote("g CO"[2]~.(paste0("-eq"))), y = "a (vegan)") + 
   theme_minimal()
 
 g_vegan_b <- ggplot(final_diff[which(final_diff$type=="vegan")], aes(x = co2emissions, y = fitgomp_b)) + 
   geom_point(size=2, shape=24, color="chartreuse4") + 
-  labs(x="Emission", y = "b (vegan)") + 
+  labs(x= bquote("g CO"[2]~.(paste0("-eq"))), y = "b (vegan)") + 
   theme_minimal()
 
 g_vegan_m <- ggplot(final_diff[which(final_diff$type=="vegan")], aes(x = co2emissions, y = fitgomp_m)) + 
   geom_point(size=2, shape=24, color="chartreuse4") + 
-  labs(x="Emission", y = "m (vegan)") + 
+  labs(x= bquote("g CO"[2]~.(paste0("-eq"))), y = "m (vegan)") + 
   theme_minimal()
 
 
 g_vegetarian_a <- ggplot(final_diff[which(final_diff$type=="vegetarian")], aes(x = co2emissions, y = fitgomp_a)) + 
   geom_point(size=2, shape=24, color="dodgerblue") + 
-  labs(x="Emission", y = "a (vegetarian)") + 
+  labs(x= bquote("g CO"[2]~.(paste0("-eq"))), y = "a (vegetarian)") + 
   theme_minimal()
 
 g_vegetarian_b <- ggplot(final_diff[which(final_diff$type=="vegetarian")], aes(x = co2emissions, y = fitgomp_b)) + 
   geom_point(size=2, shape=24, color="dodgerblue") + 
-  labs(x="Emission", y = "b (vegetarian)") + 
+  labs(x= bquote("g CO"[2]~.(paste0("-eq"))), y = "b (vegetarian)") + 
   theme_minimal()
 
 g_vegetarian_m <- ggplot(final_diff[which(final_diff$type=="vegetarian")], aes(x = co2emissions, y = fitgomp_m)) + 
   geom_point(size=2, shape=24, color="dodgerblue") + 
-  labs(x="Emission", y = "m (vegetarian)") + 
+  labs(x= bquote("g CO"[2]~.(paste0("-eq"))), y = "m (vegetarian)") + 
   theme_minimal()
 
 
 g_meat_a <- ggplot(final_diff[which(final_diff$type=="meat")], aes(x = co2emissions, y = fitgomp_a)) + 
   geom_point(size=2, shape=24, color="brown1") + 
-  labs(x="Emission", y = "a (meat)") + 
+  labs(x= bquote("g CO"[2]~.(paste0("-eq"))), y = "a (meat)") + 
   theme_minimal()
 
 g_meat_b <- ggplot(final_diff[which(final_diff$type=="meat")], aes(x = co2emissions, y = fitgomp_b)) + 
   geom_point(size=2, shape=24, color="brown1") + 
-  labs(x="Emission", y = "b (meat)") + 
+  labs(x= bquote("g CO"[2]~.(paste0("-eq"))), y = "b (meat)") + 
   theme_minimal()
 
 g_meat_m <- ggplot(final_diff[which(final_diff$type=="meat")], aes(x = co2emissions, y = fitgomp_m)) + 
   geom_point(size=2, shape=24, color="brown1") + 
-  labs(x="Emission", y = "m (meat)") + 
+  labs(x= bquote("g CO"[2]~.(paste0("-eq"))), y = "m (meat)") + 
   theme_minimal()
 
 
@@ -314,64 +314,64 @@ dev.off()
 
 gs_vegan_a <- ggplot(final_diff[which(final_diff$type=="vegan")], aes(x = co2emissions, y = fitgsg_a)) + 
   geom_point(size=2, shape=21, color="chartreuse4") + 
-  labs(x="Emission", y = "a (vegan)") + 
+  labs(x= bquote("g CO"[2]~.(paste0("-eq"))), y = "a (vegan)") + 
   theme_minimal()
 
 gs_vegan_b <- ggplot(final_diff[which(final_diff$type=="vegan")], aes(x = co2emissions, y = fitgsg_b)) + 
   geom_point(size=2, shape=21, color="chartreuse4") + 
-  labs(x="Emission", y = "b (vegan)") + 
+  labs(x= bquote("g CO"[2]~.(paste0("-eq"))), y = "b (vegan)") + 
   theme_minimal()
 
 gs_vegan_c <- ggplot(final_diff[which(final_diff$type=="vegan")], aes(x = co2emissions, y = fitgsg_c)) + 
   geom_point(size=2, shape=21, color="chartreuse4") + 
-  labs(x="Emission", y = "c (vegan)") + 
+  labs(x= bquote("g CO"[2]~.(paste0("-eq"))), y = "c (vegan)") + 
   theme_minimal()
 
 gs_vegan_m <- ggplot(final_diff[which(final_diff$type=="vegan")], aes(x = co2emissions, y = fitgsg_m)) + 
   geom_point(size=2, shape=21, color="chartreuse4") + 
-  labs(x="Emission", y = "m (vegan)") + 
+  labs(x= bquote("g CO"[2]~.(paste0("-eq"))), y = "m (vegan)") + 
   theme_minimal()
 
 
 gs_vegetarian_a <- ggplot(final_diff[which(final_diff$type=="vegetarian")], aes(x = co2emissions, y = fitgsg_a)) + 
   geom_point(size=2, shape=21, color="dodgerblue") + 
-  labs(x="Emission", y = "a (vegetarian)") + 
+  labs(x= bquote("g CO"[2]~.(paste0("-eq"))), y = "a (vegetarian)") + 
   theme_minimal()
 
 gs_vegetarian_b <- ggplot(final_diff[which(final_diff$type=="vegetarian")], aes(x = co2emissions, y = fitgsg_b)) + 
   geom_point(size=2, shape=21, color="dodgerblue") + 
-  labs(x="Emission", y = "b (vegetarian)") + 
+  labs(x= bquote("g CO"[2]~.(paste0("-eq"))), y = "b (vegetarian)") + 
   theme_minimal()
 
 gs_vegetarian_c <- ggplot(final_diff[which(final_diff$type=="vegetarian")], aes(x = co2emissions, y = fitgsg_c)) + 
   geom_point(size=2, shape=21, color="dodgerblue") + 
-  labs(x="Emission", y = "c (vegetarian)") + 
+  labs(x= bquote("g CO"[2]~.(paste0("-eq"))), y = "c (vegetarian)") + 
   theme_minimal()
 
 gs_vegetarian_m <- ggplot(final_diff[which(final_diff$type=="vegetarian")], aes(x = co2emissions, y = fitgsg_m)) + 
   geom_point(size=2, shape=21, color="dodgerblue") + 
-  labs(x="Emission", y = "m (vegetarian)") + 
+  labs(x= bquote("g CO"[2]~.(paste0("-eq"))), y = "m (vegetarian)") + 
   theme_minimal()
 
 
 gs_meat_a <- ggplot(final_diff[which(final_diff$type=="meat")], aes(x = co2emissions, y = fitgsg_a)) + 
   geom_point(size=2, shape=21, color="brown1") + 
-  labs(x="Emission", y = "a (meat)") + 
+  labs(x= bquote("g CO"[2]~.(paste0("-eq"))), y = "a (meat)") + 
   theme_minimal()
 
 gs_meat_b <- ggplot(final_diff[which(final_diff$type=="meat")], aes(x = co2emissions, y = fitgsg_b)) + 
   geom_point(size=2, shape=21, color="brown1") + 
-  labs(x="Emission", y = "b (meat)") + 
+  labs(x= bquote("g CO"[2]~.(paste0("-eq"))), y = "b (meat)") + 
   theme_minimal()
 
 gs_meat_c <- ggplot(final_diff[which(final_diff$type=="meat")], aes(x = co2emissions, y = fitgsg_c)) + 
   geom_point(size=2, shape=21, color="brown1") + 
-  labs(x="Emission", y = "c (meat)") + 
+  labs(x= bquote("g CO"[2]~.(paste0("-eq"))), y = "c (meat)") + 
   theme_minimal()
 
 gs_meat_m <- ggplot(final_diff[which(final_diff$type=="meat")], aes(x = co2emissions, y = fitgsg_m)) + 
   geom_point(size=2, shape=21, color="brown1") + 
-  labs(x="Emission", y = "m (meat)") + 
+  labs(x= bquote("g CO"[2]~.(paste0("-eq"))), y = "m (meat)") + 
   theme_minimal()
 
 
